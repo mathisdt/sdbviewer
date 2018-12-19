@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<songs>
+    <autoSort>true</autoSort>
+    <song>
+        <additionalCopyrightNotes></additionalCopyrightNotes>
+        <authorText>Mathis Dirksen-Thedens</authorText>
+        <authorTranslation>Mathis Dirksen-Thedens</authorTranslation>
+        <chordSequence></chordSequence>
+        <composer>Mathis Dirksen-Thedens</composer>
+        <language>english</language>
+        <lyrics>  C        F           C
+This is a boring test song
+[Dies is ein Test-Lied]
+           F
+which has multiple lines
+[das mehrere Zeilen hat]
+          G   C
+in each verse
+[in jeder Strophe]
+
+     C      F      C
+But see the other test song
+[Aber sieh Dir das andere Test-Lied an]
+         F
+I'm sure it will be
+[ich bin sicher, es wird]
+           G     C
+much much better
+[viel, viel besser sein]</lyrics>
+        <publisher></publisher>
+        <songNotes></songNotes>
+        <title>Test Song</title>
+        <tonality></tonality>
+        <uuid>9c44c9ac-226a-4478-b2fe-0e8dccc062cf</uuid>
+    </song>
+    <song>
+        <additionalCopyrightNotes></additionalCopyrightNotes>
+        <authorText>Mathis Dirksen-Thedens</authorText>
+        <authorTranslation></authorTranslation>
+        <chordSequence></chordSequence>
+        <composer></composer>
+        <language>english</language>
+        <lyrics>This app is used to display
+the data produced by Song Database,
+an open source software which you can get at
+https://zephyrsoft.org/sdb
+
+You have to upload the file "songs.xml"
+to a place which is publicly accessible
+so this app can display the data in it.
+
+You can also use a synchronization solution
+like Nextcloud (see https://nextcloud.com).
+
+If you use Song Database but are unsure how to
+upload your songs and access it with this app,
+you are welcome to write me an email.
+My contact details are at
+https://zephyrsoft.org/contact-about-me</lyrics>
+        <title>How This App Is Used</title>
+        <uuid>1e48767c-6cc8-48ea-917a-e894d93c149b</uuid>
+    </song>
+</songs>
