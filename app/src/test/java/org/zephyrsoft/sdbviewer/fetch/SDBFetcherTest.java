@@ -35,7 +35,7 @@ public class SDBFetcherTest {
     private SDBFetcher fetcher;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         PowerMockito.mockStatic(Log.class);
         Mockito.when(Log.e(anyString(), anyString())).thenReturn(1);
 
@@ -44,8 +44,7 @@ public class SDBFetcherTest {
 
     @Test
     public void fetchRawDataFromNetwork() {
-        // TODO
-        String rawData = fetcher.fetchRawDataFromNetwork("https://koinonia.church/songs.php");
+        String rawData = fetcher.fetchRawDataFromNetwork("https://raw.githubusercontent.com/mathisdt/sdbviewer/master/songs.xml");
 
         assertNotNull(rawData);
         assertTrue(rawData.length() > 0);
