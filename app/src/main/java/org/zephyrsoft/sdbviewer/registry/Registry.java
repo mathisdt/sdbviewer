@@ -18,6 +18,7 @@ public class Registry {
             throw new IllegalStateException("wrong instance registered for class " + key.getName()
                 + " - instance is of type " + registrants.get(key).getClass().getName());
         } else {
+            // noinspection unchecked
             return (T) registrants.get(key);
         }
     }
