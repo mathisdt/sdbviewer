@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
  */
 public class SongParser {
 	
-	protected static final String LABEL_MUSIC = "Music: ";
-	protected static final String LABEL_TEXT = "Text: ";
-	protected static final String LABEL_TRANSLATION = "Translation: ";
-	protected static final String LABEL_PUBLISHER = "Publisher: ";
+	private static final String LABEL_MUSIC = "Music: ";
+	private static final String LABEL_TEXT = "Text: ";
+	private static final String LABEL_TRANSLATION = "Translation: ";
+	private static final String LABEL_PUBLISHER = "Publisher: ";
 	
 	private static final Pattern TRANSLATION_PATTERN = Pattern.compile("^(.*)\\[(.*)\\](.*)$");
 	private static final String NEWLINE_REGEX = "\r?+\n";
@@ -54,13 +54,13 @@ public class SongParser {
 					String prefix = translationMatcher.group(1);
 					String translation = translationMatcher.group(2);
 					String suffix = translationMatcher.group(3);
-					if (!isEmpty(prefix)) {
+					if (notEmpty(prefix)) {
 						ret.add(new SongElement(SongElementEnum.LYRICS, prefix));
 					}
-					if (!isEmpty(translation)) {
+					if (notEmpty(translation)) {
 						ret.add(new SongElement(SongElementEnum.TRANSLATION, translation));
 					}
-					if (!isEmpty(suffix)) {
+					if (notEmpty(suffix)) {
 						ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
 					}
 				} else if (isChordsLine(line)) {
@@ -77,19 +77,19 @@ public class SongParser {
 		}
 		
 		// copyright
-		if (!isEmpty(song.getComposer())) {
+		if (notEmpty(song.getComposer())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, LABEL_MUSIC + song.getComposer()));
 		}
-		if (!isEmpty(song.getAuthorText())) {
+		if (notEmpty(song.getAuthorText())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, LABEL_TEXT + song.getAuthorText()));
 		}
-		if (!isEmpty(song.getAuthorTranslation())) {
+		if (notEmpty(song.getAuthorTranslation())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, LABEL_TRANSLATION + song.getAuthorTranslation()));
 		}
-		if (!isEmpty(song.getPublisher())) {
+		if (notEmpty(song.getPublisher())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, LABEL_PUBLISHER + song.getPublisher()));
 		}
-		if (!isEmpty(song.getAdditionalCopyrightNotes())) {
+		if (notEmpty(song.getAdditionalCopyrightNotes())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, song.getAdditionalCopyrightNotes()));
 		}
 		
@@ -97,13 +97,10 @@ public class SongParser {
 	}
 	
 	private static boolean addNewlineIfNotFirstLine(List<SongElement> elementList, boolean isFirst) {
-		boolean ret = isFirst;
-		if (ret) {
-			ret = false;
-		} else {
+		if (!isFirst) {
 			elementList.add(new SongElement(SongElementEnum.NEW_LINE, "\n"));
 		}
-		return ret;
+		return false;
 	}
 	
 	/**
@@ -162,7 +159,7 @@ public class SongParser {
 		/** a copyright element (always a whole line) */
 		COPYRIGHT,
 		/** indicates a line break between LYRICS, CHORDS and TRANSLATION elements - this element is only used there! */
-		NEW_LINE;
+		NEW_LINE
 	}
 
 	/**
@@ -175,7 +172,7 @@ public class SongParser {
 		private SongElementEnum type;
 		private String element;
 
-		public SongElement(SongElementEnum type, String element) {
+		SongElement(SongElementEnum type, String element) {
 			this.type = type;
 			this.element = element;
 		}
@@ -184,7 +181,7 @@ public class SongParser {
 			return type;
 		}
 
-		public String getElement() {
+		String getElement() {
 			return element;
 		}
 
@@ -205,8 +202,8 @@ public class SongParser {
 
 	}
 
-	private static boolean isEmpty(String toTest) {
-		return toTest == null || toTest.isEmpty();
+	private static boolean notEmpty(String str) {
+		return str != null && !str.isEmpty();
 	}
 
 }
