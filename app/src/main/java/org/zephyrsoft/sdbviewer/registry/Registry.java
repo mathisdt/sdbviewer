@@ -12,18 +12,17 @@ public class Registry {
     private static final Map<Class<?>, Object> registrants = new HashMap<>();
 
     public static <T> T get(Class<T> key) {
-        if (registrants.containsKey(key) && key.getClass().equals(registrants.get(key).getClass())) {
-            return (T) registrants.get(key);
-        } else {
+        if (!registrants.containsKey(key)) {
             throw new IllegalStateException("nothing registered for class " + key.getName());
+        } else if (!key.getClass().equals(registrants.get(key).getClass())) {
+            throw new IllegalStateException("wrong instance registered for class " + key.getName()
+                + " - instance is of type " + registrants.get(key).getClass().getName());
+        } else {
+            return (T) registrants.get(key);
         }
     }
 
     public static void register(Class<?> key, Object value) {
         registrants.put(key, value);
-    }
-
-    public static void deregister(Class<?> key) {
-        registrants.remove(key);
     }
 }
