@@ -45,7 +45,7 @@ public class SDBFetcher {
 
     @VisibleForTesting
     String fetchRawDataFromNetwork(String url) {
-        String songsXml = null;
+        String songsXml;
         try {
             URL parsedUrl = new URL(url);
             HttpURLConnection urlConnection = (HttpURLConnection) parsedUrl.openConnection();
@@ -53,7 +53,7 @@ public class SDBFetcher {
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 StringBuilder result = new StringBuilder();
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null) {
                     result.append(line);
                 }

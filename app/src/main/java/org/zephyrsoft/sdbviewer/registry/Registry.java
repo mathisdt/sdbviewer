@@ -12,7 +12,11 @@ public class Registry {
     private static final Map<Class<?>, Object> registrants = new HashMap<>();
 
     public static <T> T get(Class<T> key) {
-        return (T) registrants.get(key);
+        if (registrants.containsKey(key) && key.getClass().equals(registrants.get(key).getClass())) {
+            return (T) registrants.get(key);
+        } else {
+            throw new IllegalStateException("nothing registered for class " + key.getName());
+        }
     }
 
     public static void register(Class<?> key, Object value) {
