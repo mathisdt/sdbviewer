@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +85,7 @@ public class SongListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                // TODO
+                loadAndShow((RecyclerView) findViewById(R.id.song_list));
                 return true;
 
             case R.id.action_settings:
@@ -107,7 +108,7 @@ public class SongListActivity extends AppCompatActivity {
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String url = sharedPreferences.getString(Constants.PREF_URL, "");
 
-        // TODO show "loading" indicator
+        ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
         new FetchSongsTask(recyclerView, url).execute();
     }
 
@@ -135,12 +136,12 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled(List<Song> songs) {
-            // TODO hide "loading" indicator
+            ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.INVISIBLE);
         }
 
         protected void onPostExecute(List<Song> result) {
             recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result, mTwoPane));
-            // TODO hide "loading" indicator
+            ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.INVISIBLE);
         }
     }
 
