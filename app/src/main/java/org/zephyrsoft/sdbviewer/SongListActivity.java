@@ -1,24 +1,36 @@
 package org.zephyrsoft.sdbviewer;
 
+import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.zephyrsoft.sdbviewer.dummy.DummyContent;
+import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
+import org.zephyrsoft.sdbviewer.model.Song;
+import org.zephyrsoft.sdbviewer.registry.Registry;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * An activity representing a list of Songs. This activity
@@ -36,9 +48,12 @@ public class SongListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
+    private SDBFetcher fetcher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fetcher = Registry.get(SDBFetcher.class);
         setContentView(R.layout.activity_song_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -55,7 +70,7 @@ public class SongListActivity extends AppCompatActivity {
 
         View recyclerView = findViewById(R.id.song_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        loadAndShow((RecyclerView) recyclerView);
     }
 
     @Override
@@ -87,15 +102,53 @@ public class SongListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+    private void loadAndShow(@NonNull RecyclerView recyclerView) {
+        SharedPreferences sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String url = sharedPreferences.getString(Constants.PREF_URL, "");
+
+        // TODO show "loading" indicator
+        new FetchSongsTask(recyclerView, url).execute();
+    }
+
+    private class FetchSongsTask extends AsyncTask<Void, Integer, List<Song>> {
+        private RecyclerView recyclerView;
+        private String url;
+        private List<Song> songs;
+
+        FetchSongsTask(RecyclerView recyclerView, String url) {
+            this.recyclerView = recyclerView;
+            this.url = url;
+            songs = new ArrayList<>();
+        }
+
+        protected List<Song> doInBackground(Void... nothing) {
+            try {
+                songs = fetcher.fetchSongs(url);
+            } catch(Exception e) {
+                Log.w(Constants.LOG_TAG, "could not load songs", e);
+                Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + url + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+            }
+
+            return songs;
+        }
+
+        @Override
+        protected void onCancelled(List<Song> songs) {
+            // TODO hide "loading" indicator
+        }
+
+        protected void onPostExecute(List<Song> result) {
+            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result, mTwoPane));
+            // TODO hide "loading" indicator
+        }
     }
 
     public static class SimpleItemRecyclerViewAdapter
         extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final SongListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Song> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
@@ -120,7 +173,7 @@ public class SongListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(SongListActivity parent,
-                                      List<DummyContent.DummyItem> items,
+                                      List<Song> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -136,8 +189,8 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getTitle());
+            holder.mContentView.setText(mValues.get(position).getLyrics());
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);

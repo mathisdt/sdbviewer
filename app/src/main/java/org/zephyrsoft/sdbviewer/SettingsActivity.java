@@ -166,8 +166,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("pref_songs_url"));
-            bindPreferenceSummaryToValue(findPreference("pref_songs_reload_interval"));
+            bindPreferenceSummaryToValue(findPreference(Constants.PREF_URL));
+            bindPreferenceSummaryToValue(findPreference(Constants.PREF_RELOAD_INTERVAL));
         }
 
         @Override

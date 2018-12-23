@@ -11,6 +11,7 @@ import com.stanfy.gsonxml.XmlParserCreator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.zephyrsoft.sdbviewer.model.Song;
+import org.zephyrsoft.sdbviewer.registry.Registry;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -27,6 +28,10 @@ public class SDBFetcher {
 
     static {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
+
+    public static void createAndRegisterInstance() {
+        Registry.register(SDBFetcher.class, new SDBFetcher());
     }
 
     public List<Song> fetchSongs(String url) {
