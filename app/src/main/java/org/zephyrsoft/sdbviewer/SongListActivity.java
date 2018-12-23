@@ -1,7 +1,5 @@
 package org.zephyrsoft.sdbviewer;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,11 +25,8 @@ import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.registry.Registry;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 /**
  * An activity representing a list of Songs. This activity
@@ -136,12 +131,12 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled(List<Song> songs) {
-            ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.INVISIBLE);
+            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         }
 
         protected void onPostExecute(List<Song> result) {
             recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result, mTwoPane));
-            ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.INVISIBLE);
+            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -181,15 +176,16 @@ public class SongListActivity extends AppCompatActivity {
             mTwoPane = twoPane;
         }
 
+        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.song_list_content, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             holder.mIdView.setText(mValues.get(position).getTitle());
             holder.mContentView.setText(mValues.get(position).getLyrics());
 
@@ -208,8 +204,8 @@ public class SongListActivity extends AppCompatActivity {
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView = view.findViewById(R.id.id_text);
+                mContentView = view.findViewById(R.id.content);
             }
         }
     }
