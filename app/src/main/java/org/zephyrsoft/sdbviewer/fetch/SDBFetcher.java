@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Security;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.zephyrsoft.sdbviewer.Constants.LOG_TAG;
@@ -70,8 +71,17 @@ public class SDBFetcher {
 
     @VisibleForTesting
     List<Song> deserializeFromXml(String xmlString) {
-        return createGsonXml().fromXml(xmlString, new TypeToken<List<Song>>() {
+        List<Song> fromXml = createGsonXml().fromXml(xmlString, new TypeToken<List<Song>>() {
         }.getType());
+
+        for (Iterator<Song> iter = fromXml.iterator(); iter.hasNext();) {
+            Song song = iter.next();
+            if (song.isEmpty()) {
+                iter.remove();
+            }
+        }
+
+        return fromXml;
     }
 
     private GsonXml createGsonXml() {

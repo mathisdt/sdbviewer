@@ -16,13 +16,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.zephyrsoft.sdbviewer.dummy.DummyContent;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
+import org.zephyrsoft.sdbviewer.parser.SongParser;
 import org.zephyrsoft.sdbviewer.registry.Registry;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class SongListActivity extends AppCompatActivity {
         fetcher = Registry.get(SDBFetcher.class);
         setContentView(R.layout.activity_song_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
@@ -103,7 +103,7 @@ public class SongListActivity extends AppCompatActivity {
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String url = sharedPreferences.getString(Constants.PREF_URL, "");
 
-        ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
+        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
         new FetchSongsTask(recyclerView, url).execute();
     }
 
@@ -186,8 +186,9 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).getTitle());
-            holder.mContentView.setText(mValues.get(position).getLyrics());
+            Song song = mValues.get(position);
+            holder.mIdView.setText(song.getTitle());
+            holder.mContentView.setText(SongParser.getFirstLyricsLine(song));
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);

@@ -14,7 +14,7 @@ public class Registry {
     public static <T> T get(Class<T> key) {
         if (!registrants.containsKey(key)) {
             throw new IllegalStateException("nothing registered for class " + key.getName());
-        } else if (!key.getClass().equals(registrants.get(key).getClass())) {
+        } else if (!key.equals(registrants.get(key).getClass())) {
             throw new IllegalStateException("wrong instance registered for class " + key.getName()
                 + " - instance is of type " + registrants.get(key).getClass().getName());
         } else {

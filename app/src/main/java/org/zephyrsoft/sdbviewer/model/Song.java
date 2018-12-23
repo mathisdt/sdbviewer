@@ -164,4 +164,21 @@ public class Song implements Serializable, Comparable<Song> {
         return "SONG[" + title + "|" + uuid + "]";
     }
 
+    private static boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    public boolean isEmpty() {
+        return isEmpty(getTitle())
+            && isEmpty(getComposer())
+            && isEmpty(getAuthorText())
+            && isEmpty(getAuthorTranslation())
+            && isEmpty(getPublisher())
+            && isEmpty(getAdditionalCopyrightNotes())
+            && isEmpty(getLanguage())
+            && isEmpty(getSongNotes())
+            && isEmpty(getLyrics())
+            && isEmpty(getTonality())
+            && isEmpty(getChordSequence());
+    }
 }

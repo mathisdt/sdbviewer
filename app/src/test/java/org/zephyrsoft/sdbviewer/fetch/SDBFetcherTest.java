@@ -14,6 +14,7 @@ import org.zephyrsoft.sdbviewer.model.Song;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,6 +56,8 @@ public class SDBFetcherTest {
         List<Song> songs = fetcher.deserializeFromXml(EXAMPLE_XML);
 
         assertNotNull(songs);
-        assertTrue(songs.size() > 0);
+        assertEquals(2, songs.size());
+        assertNotNull(songs.get(1).getLyrics());
+        assertTrue(songs.get(1).getLyrics().contains("\n"));
     }
 }
