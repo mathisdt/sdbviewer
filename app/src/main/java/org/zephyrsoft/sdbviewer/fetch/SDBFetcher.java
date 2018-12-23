@@ -56,7 +56,7 @@ public class SDBFetcher {
                 StringBuilder result = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    result.append(line);
+                    result.append(line).append("\n");
                 }
                 songsXml = result.toString();
             } finally {
