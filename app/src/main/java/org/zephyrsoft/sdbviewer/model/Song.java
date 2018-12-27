@@ -1,9 +1,13 @@
 package org.zephyrsoft.sdbviewer.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.text.Collator;
 
-public class Song implements Serializable, Comparable<Song> {
+public class Song implements Serializable, Comparable<Song>, Parcelable {
 
     private String title;
     private String composer;
@@ -18,6 +22,18 @@ public class Song implements Serializable, Comparable<Song> {
     private String chordSequence;
     private String lyrics;
 
+    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
+        @Override
+        public Song createFromParcel(Parcel in) {
+            return new Song(in);
+        }
+
+        @Override
+        public Song[] newArray(int size) {
+            return new Song[size];
+        }
+    };
+
     /**
      * Create a song instance. CAUTION: every song has to have a UUID! This constructor is only necessary for
      * unmarshalling from XML.
@@ -28,6 +44,42 @@ public class Song implements Serializable, Comparable<Song> {
 
     public Song(String uuid) {
         this.uuid = uuid;
+    }
+
+    private Song(Parcel in) {
+        title = in.readString();
+        composer = in.readString();
+        authorText = in.readString();
+        authorTranslation = in.readString();
+        publisher = in.readString();
+        additionalCopyrightNotes = in.readString();
+        language = in.readString();
+        songNotes = in.readString();
+        tonality = in.readString();
+        uuid = in.readString();
+        chordSequence = in.readString();
+        lyrics = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(composer);
+        dest.writeString(authorText);
+        dest.writeString(authorTranslation);
+        dest.writeString(publisher);
+        dest.writeString(additionalCopyrightNotes);
+        dest.writeString(language);
+        dest.writeString(songNotes);
+        dest.writeString(tonality);
+        dest.writeString(uuid);
+        dest.writeString(chordSequence);
+        dest.writeString(lyrics);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public String getTitle() {
@@ -123,10 +175,8 @@ public class Song implements Serializable, Comparable<Song> {
     }
 
     @Override
-    public int compareTo(Song o) {
-        int ret = 0;
-
-        ret = compareLocaleBasedWithNullFirst(getTitle(), o.getTitle());
+    public int compareTo(@NonNull Song o) {
+        int ret = compareLocaleBasedWithNullFirst(getTitle(), o.getTitle());
         if (ret != 0) {
             return ret;
         }
@@ -149,13 +199,11 @@ public class Song implements Serializable, Comparable<Song> {
             return -1;
         } else if (one != null && two == null) {
             return 1;
-        } else if (one == null && two == null) {
+        } else if (one == null) { // two is always null here
             return 0;
-        } else if (one != null && two != null) {
+        } else { // one and two are always null here
             Collator collator = Collator.getInstance();
             return collator.compare(one, two);
-        } else {
-            throw new IllegalStateException();
         }
     }
 

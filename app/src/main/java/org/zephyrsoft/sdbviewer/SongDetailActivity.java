@@ -41,8 +41,7 @@ public class SongDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(SongDetailFragment.ARG_ITEM_ID,
-                getIntent().getStringExtra(SongDetailFragment.ARG_ITEM_ID));
+            arguments.putParcelable(Constants.ARG_SONG, getIntent().getParcelableExtra(Constants.ARG_SONG));
             SongDetailFragment fragment = new SongDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -39,12 +39,20 @@ public class SongParser {
 	public static List<SongElement> parse(Song song, boolean includeTitle, boolean includeChords) {
 		List<SongElement> ret = new ArrayList<>();
 		
-		// title
 		if (includeTitle) {
 			ret.add(new SongElement(SongElementEnum.TITLE, song.getTitle() == null ? "" : song.getTitle()));
 		}
 		
-		// lyrics
+		ret.addAll(parseLyrics(song, includeChords));
+
+		ret.addAll(parseCopyright(song));
+		
+		return ret;
+	}
+
+	public static List<SongElement> parseLyrics(Song song, boolean includeChords) {
+		List<SongElement> ret = new ArrayList<>();
+
 		if (song.getLyrics() != null) {
 			boolean isFirst = true;
 			for (String line : song.getLyrics().split(NEWLINE_REGEX)) {
@@ -72,11 +80,16 @@ public class SongParser {
 					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
 					ret.add(new SongElement(SongElementEnum.LYRICS, line));
 				}
-				
+
 			}
 		}
-		
-		// copyright
+
+		return ret;
+	}
+
+	public static List<SongElement> parseCopyright(Song song) {
+		List<SongElement> ret = new ArrayList<>();
+
 		if (notEmpty(song.getComposer())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, LABEL_MUSIC + song.getComposer()));
 		}
@@ -92,17 +105,17 @@ public class SongParser {
 		if (notEmpty(song.getAdditionalCopyrightNotes())) {
 			ret.add(new SongElement(SongElementEnum.COPYRIGHT, song.getAdditionalCopyrightNotes()));
 		}
-		
+
 		return ret;
 	}
-	
+
 	private static boolean addNewlineIfNotFirstLine(List<SongElement> elementList, boolean isFirst) {
 		if (!isFirst) {
 			elementList.add(new SongElement(SongElementEnum.NEW_LINE, "\n"));
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Extract the first lyrics-only line from a song.
 	 */
@@ -147,7 +160,7 @@ public class SongParser {
 	/**
 	 * Indicates specific elements of a {@link Song}.
 	 */
-	private enum SongElementEnum {
+	public enum SongElementEnum {
 		/** the title (if present, it is always exactly one line) */
 		TITLE,
 		/** a lyrics element (not always a whole line, see NEW_LINE) */
@@ -167,7 +180,7 @@ public class SongParser {
 	 *
 	 * @author Mathis Dirksen-Thedens
 	 */
-	private static class SongElement {
+	public static class SongElement {
 
 		private SongElementEnum type;
 		private String element;

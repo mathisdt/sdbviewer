@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.zephyrsoft.sdbviewer.dummy.DummyContent;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.parser.SongParser;
@@ -149,10 +149,11 @@ public class SongListActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                Song item = (Song) view.getTag();
+
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(SongDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putParcelable(Constants.ARG_SONG, item);
                     SongDetailFragment fragment = new SongDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -161,7 +162,7 @@ public class SongListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, SongDetailActivity.class);
-                    intent.putExtra(SongDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(Constants.ARG_SONG, (Parcelable) item);
 
                     context.startActivity(intent);
                 }
@@ -190,7 +191,7 @@ public class SongListActivity extends AppCompatActivity {
             holder.mIdView.setText(song.getTitle());
             holder.mContentView.setText(SongParser.getFirstLyricsLine(song));
 
-            holder.itemView.setTag(mValues.get(position));
+            holder.itemView.setTag(song);
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
