@@ -4,7 +4,11 @@
 
     <header
         android:fragment="org.zephyrsoft.sdbviewer.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/pref_header_general"/>
+    <header
+        android:fragment="org.zephyrsoft.sdbviewer.SettingsActivity$DisplayPreferenceFragment"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="@string/pref_header_display"/>
 
 </preference-headers>

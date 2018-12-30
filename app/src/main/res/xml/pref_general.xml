@@ -1,8 +1,6 @@
-<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
-                  xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <EditTextPreference
         android:capitalize="none"
         android:defaultValue="@string/pref_songs_url_default"
@@ -21,9 +19,5 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_songs_refresh_interval_desc"/>
-
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
 
 </PreferenceScreen>
