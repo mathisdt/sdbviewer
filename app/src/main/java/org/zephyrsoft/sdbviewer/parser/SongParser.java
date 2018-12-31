@@ -43,21 +43,21 @@ public class SongParser {
 			ret.add(new SongElement(SongElementEnum.TITLE, song.getTitle() == null ? "" : song.getTitle()));
 		}
 		
-		ret.addAll(parseLyrics(song, includeChords));
+		ret.addAll(parseLyrics(song, includeChords, true));
 
 		ret.addAll(parseCopyright(song));
 		
 		return ret;
 	}
 
-	public static List<SongElement> parseLyrics(Song song, boolean includeChords) {
+	public static List<SongElement> parseLyrics(Song song, boolean includeChords, boolean includeTranslation) {
 		List<SongElement> ret = new ArrayList<>();
 
 		if (song.getLyrics() != null) {
 			boolean isFirst = true;
 			for (String line : song.getLyrics().split(NEWLINE_REGEX)) {
 				Matcher translationMatcher = TRANSLATION_PATTERN.matcher(line);
-				if (translationMatcher.matches()) {
+				if (translationMatcher.matches() && includeTranslation) {
 					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
 					String prefix = translationMatcher.group(1);
 					String translation = translationMatcher.group(2);
@@ -71,11 +71,9 @@ public class SongParser {
 					if (notEmpty(suffix)) {
 						ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
 					}
-				} else if (isChordsLine(line)) {
-					if (includeChords) {
-						isFirst = addNewlineIfNotFirstLine(ret, isFirst);
-						ret.add(new SongElement(SongElementEnum.CHORDS, line));
-					}
+				} else if (isChordsLine(line) && includeChords) {
+					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
+					ret.add(new SongElement(SongElementEnum.CHORDS, line));
 				} else {
 					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
 					ret.add(new SongElement(SongElementEnum.LYRICS, line));

@@ -80,6 +80,7 @@ public class SongListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
+                fetcher.invalidateSavedSongs(getApplicationContext());
                 loadAndShow((RecyclerView) findViewById(R.id.song_list));
                 return true;
 
@@ -120,7 +121,7 @@ public class SongListActivity extends AppCompatActivity {
 
         protected List<Song> doInBackground(Void... nothing) {
             try {
-                songs = fetcher.fetchSongs(url);
+                songs = fetcher.fetchSongs(getApplicationContext(), url);
             } catch(Exception e) {
                 Log.w(Constants.LOG_TAG, "could not load songs", e);
                 Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + url + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();

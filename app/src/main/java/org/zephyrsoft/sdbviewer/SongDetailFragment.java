@@ -1,7 +1,9 @@
 package org.zephyrsoft.sdbviewer;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.parser.SongParser;
+
+import java.util.List;
 
 /**
  * A fragment representing a single Song detail screen.
@@ -51,15 +55,24 @@ public class SongDetailFragment extends Fragment {
         }
     }
 
-    /** TODO see {@link SongParser#parseLyrics} and {@link SongParser#parseCopyright} */
+    private boolean getBooleanPreference(String key, boolean defaultValue) {
+        SharedPreferences sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(getContext());
+        return sharedPreferences.getBoolean(key, defaultValue);
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.song_detail, container, false);
 
-        // Show the content as text in a TextView.
         if (song != null) {
-            // TODO parse song => display lyrics / translation / chords as selected in preferences!
+            boolean showTranslation = getBooleanPreference(Constants.PREF_SHOW_TRANSLATION, true);
+            boolean showChords = getBooleanPreference(Constants.PREF_SHOW_CHORDS, true);
+
+            List<SongParser.SongElement> parsedSong = SongParser.parseLyrics(song, showChords, showTranslation);
+
+            // TODO display lyrics / translation / chords as parsed
             ((TextView) rootView.findViewById(R.id.song_detail)).setText(song.getLyrics());
         }
 
