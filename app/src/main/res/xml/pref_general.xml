@@ -5,19 +5,19 @@
         android:capitalize="none"
         android:defaultValue="@string/pref_songs_url_default"
         android:inputType="textUri"
-        android:key="pref_songs_url"
+        android:key="@string/pref_songs_url"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_songs_url_desc"/>
     <EditTextPreference
-        android:defaultValue="@integer/pref_songs_refresh_interval_default"
+        android:defaultValue="@integer/pref_songs_reload_interval_default"
         android:inputType="number"
-        android:key="pref_songs_reload_interval"
+        android:key="@string/pref_songs_reload_interval"
         android:maxLength="3"
         android:numeric="integer"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_songs_refresh_interval_desc"/>
+        android:title="@string/pref_songs_reload_interval_desc"/>
 
 </PreferenceScreen>

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="pref_songs_refresh_interval_default">72</integer>
+    <integer name="pref_songs_reload_interval_default">72</integer>
 </resources>

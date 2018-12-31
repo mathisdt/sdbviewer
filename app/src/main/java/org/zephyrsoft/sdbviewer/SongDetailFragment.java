@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,13 +68,19 @@ public class SongDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.song_detail, container, false);
 
         if (song != null) {
-            boolean showTranslation = getBooleanPreference(Constants.PREF_SHOW_TRANSLATION, true);
-            boolean showChords = getBooleanPreference(Constants.PREF_SHOW_CHORDS, true);
+            boolean showTranslation = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_translation), true);
+            boolean showChords = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_chords), true);
 
             List<SongParser.SongElement> parsedSong = SongParser.parseLyrics(song, showChords, showTranslation);
 
+            SpannableStringBuilder formatted = new SpannableStringBuilder();
+
             // TODO display lyrics / translation / chords as parsed
-            ((TextView) rootView.findViewById(R.id.song_detail)).setText(song.getLyrics());
+            for (SongParser.SongElement element : parsedSong) {
+                formatted.append(element.getElement());
+            }
+
+            ((TextView) rootView.findViewById(R.id.song_detail)).setText(formatted);
         }
 
         return rootView;

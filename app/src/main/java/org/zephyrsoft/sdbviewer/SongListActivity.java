@@ -102,7 +102,7 @@ public class SongListActivity extends AppCompatActivity {
     private void loadAndShow(@NonNull RecyclerView recyclerView) {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String url = sharedPreferences.getString(Constants.PREF_URL, "");
+        String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), "");
 
         findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
         new FetchSongsTask(recyclerView, url).execute();

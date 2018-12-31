@@ -3,11 +3,11 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="pref_display_translation"
+        android:key="@string/pref_show_translation"
         android:title="@string/pref_show_translation_desc"/>
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="pref_display_chords"
+        android:key="@string/pref_show_chords"
         android:title="@string/pref_show_chords_desc"/>
 
 </PreferenceScreen>

@@ -49,8 +49,8 @@ public class SDBFetcher {
             if (fileExists(context, Constants.FILE_LAST_UPDATED)
                 && fileExists(context, Constants.FILE_SONGS)) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-                String hoursBetweenReloadsString = sharedPreferences.getString(Constants.PREF_RELOAD_INTERVAL,
-                    String.valueOf(context.getResources().getInteger(R.integer.pref_songs_refresh_interval_default)));
+                String hoursBetweenReloadsString = sharedPreferences.getString(context.getString(R.string.pref_songs_reload_interval),
+                    String.valueOf(context.getResources().getInteger(R.integer.pref_songs_reload_interval_default)));
                 int hoursBetweenReloads = Integer.valueOf(hoursBetweenReloadsString);
 
                 String lastUpdatedString = readFile(context, Constants.FILE_LAST_UPDATED).replaceAll("\n", "");

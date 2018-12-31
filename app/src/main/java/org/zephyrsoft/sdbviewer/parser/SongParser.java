@@ -57,23 +57,27 @@ public class SongParser {
 			boolean isFirst = true;
 			for (String line : song.getLyrics().split(NEWLINE_REGEX)) {
 				Matcher translationMatcher = TRANSLATION_PATTERN.matcher(line);
-				if (translationMatcher.matches() && includeTranslation) {
-					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
-					String prefix = translationMatcher.group(1);
-					String translation = translationMatcher.group(2);
-					String suffix = translationMatcher.group(3);
-					if (notEmpty(prefix)) {
-						ret.add(new SongElement(SongElementEnum.LYRICS, prefix));
-					}
-					if (notEmpty(translation)) {
-						ret.add(new SongElement(SongElementEnum.TRANSLATION, translation));
-					}
-					if (notEmpty(suffix)) {
-						ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
-					}
-				} else if (isChordsLine(line) && includeChords) {
-					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
-					ret.add(new SongElement(SongElementEnum.CHORDS, line));
+				if (translationMatcher.matches()) {
+				    if (includeTranslation) {
+                        isFirst = addNewlineIfNotFirstLine(ret, isFirst);
+                        String prefix = translationMatcher.group(1);
+                        String translation = translationMatcher.group(2);
+                        String suffix = translationMatcher.group(3);
+                        if (notEmpty(prefix)) {
+                            ret.add(new SongElement(SongElementEnum.LYRICS, prefix));
+                        }
+                        if (notEmpty(translation)) {
+                            ret.add(new SongElement(SongElementEnum.TRANSLATION, translation));
+                        }
+                        if (notEmpty(suffix)) {
+                            ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
+                        }
+                    }
+				} else if (isChordsLine(line)) {
+				    if (includeChords) {
+                        isFirst = addNewlineIfNotFirstLine(ret, isFirst);
+                        ret.add(new SongElement(SongElementEnum.CHORDS, line));
+                    }
 				} else {
 					isFirst = addNewlineIfNotFirstLine(ret, isFirst);
 					ret.add(new SongElement(SongElementEnum.LYRICS, line));
@@ -192,7 +196,7 @@ public class SongParser {
 			return type;
 		}
 
-		String getElement() {
+		public String getElement() {
 			return element;
 		}
 
