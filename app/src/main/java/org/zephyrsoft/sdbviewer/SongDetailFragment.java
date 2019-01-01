@@ -2,12 +2,17 @@ package org.zephyrsoft.sdbviewer;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,12 +77,31 @@ public class SongDetailFragment extends Fragment {
             boolean showChords = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_chords), true);
 
             List<SongParser.SongElement> parsedSong = SongParser.parseLyrics(song, showChords, showTranslation);
+            boolean parsedSongContainsChords = false;
+            for (SongParser.SongElement element : parsedSong) {
+                if (element.getType() == SongParser.SongElementEnum.CHORDS) {
+                    parsedSongContainsChords = true;
+                    break;
+                }
+            }
 
             SpannableStringBuilder formatted = new SpannableStringBuilder();
 
             // TODO display lyrics / translation / chords as parsed
             for (SongParser.SongElement element : parsedSong) {
+                int start = formatted.length();
                 formatted.append(element.getElement());
+                int end = formatted.length();
+
+                if (element.getType() == SongParser.SongElementEnum.TRANSLATION) {
+                    formatted.setSpan(new RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    formatted.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                if (showChords && parsedSongContainsChords
+                    && (element.getType() == SongParser.SongElementEnum.LYRICS || element.getType() == SongParser.SongElementEnum.CHORDS)) {
+                    formatted.setSpan(new TypefaceSpan("monospace"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    formatted.setSpan(new RelativeSizeSpan(0.8f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
 
             ((TextView) rootView.findViewById(R.id.song_detail)).setText(formatted);
