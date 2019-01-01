@@ -1,5 +1,6 @@
 package org.zephyrsoft.sdbviewer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,8 +25,8 @@ import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.parser.SongParser;
 import org.zephyrsoft.sdbviewer.registry.Registry;
+import org.zephyrsoft.sdbviewer.util.Consumer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,7 +88,6 @@ public class SongListActivity extends AppCompatActivity {
             case R.id.action_settings:
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, SettingsActivity.class);
-
                 context.startActivity(intent);
                 return true;
 
@@ -99,45 +99,94 @@ public class SongListActivity extends AppCompatActivity {
         }
     }
 
-    private void loadAndShow(@NonNull RecyclerView recyclerView) {
+    private void loadAndShow(final @NonNull RecyclerView recyclerView) {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), "");
+        final String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
 
         findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-        new FetchSongsTask(recyclerView, url).execute();
+
+        Consumer<FetchSongsResult> onDone = new Consumer<FetchSongsResult>() {
+            @Override
+            public void accept(FetchSongsResult result) {
+                if (result.hasException()) {
+                    Log.w(Constants.LOG_TAG, "could not load songs", result.getException());
+                    Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + url + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+                } else {
+                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
+                }
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+            }
+        };
+        Runnable onAbort = new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+            }
+        };
+
+        try {
+            new FetchSongsTask(onDone, onAbort, url).execute();
+        } catch (Exception e) {
+            onDone.accept(new FetchSongsResult(e));
+        }
     }
 
-    private class FetchSongsTask extends AsyncTask<Void, Integer, List<Song>> {
-        private RecyclerView recyclerView;
+    @SuppressLint("StaticFieldLeak")
+    private class FetchSongsTask extends AsyncTask<Void, Integer, FetchSongsResult> {
+        private Consumer<FetchSongsResult> onDone;
+        private Runnable onAbort;
         private String url;
-        private List<Song> songs;
 
-        FetchSongsTask(RecyclerView recyclerView, String url) {
-            this.recyclerView = recyclerView;
+        FetchSongsTask(Consumer<FetchSongsResult> onDone, Runnable onAbort, String url) {
+            this.onDone = onDone;
+            this.onAbort = onAbort;
             this.url = url;
-            songs = new ArrayList<>();
         }
 
-        protected List<Song> doInBackground(Void... nothing) {
+        protected FetchSongsResult doInBackground(Void... nothing) {
+            List<Song> songs;
             try {
                 songs = fetcher.fetchSongs(getApplicationContext(), url);
-            } catch(Exception e) {
-                Log.w(Constants.LOG_TAG, "could not load songs", e);
-                Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + url + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                return(new FetchSongsResult(e));
             }
 
-            return songs;
+            return new FetchSongsResult(songs);
         }
 
         @Override
-        protected void onCancelled(List<Song> songs) {
-            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+        protected void onCancelled(FetchSongsResult songs) {
+            onAbort.run();
         }
 
-        protected void onPostExecute(List<Song> result) {
-            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result, mTwoPane));
-            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+        protected void onPostExecute(FetchSongsResult result) {
+            onDone.accept(result);
+        }
+    }
+
+    private static class FetchSongsResult {
+        private List<Song> songs;
+        private Exception exception;
+
+        FetchSongsResult(List<Song> songs) {
+            this.songs = songs;
+        }
+
+        FetchSongsResult(Exception exception) {
+            this.exception = exception;
+        }
+
+        boolean hasException() {
+            return exception != null;
+        }
+
+        List<Song> getSongs() {
+            return songs;
+        }
+
+        Exception getException() {
+            return exception;
         }
     }
 

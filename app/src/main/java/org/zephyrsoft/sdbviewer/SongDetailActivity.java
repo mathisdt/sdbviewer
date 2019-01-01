@@ -2,6 +2,7 @@ package org.zephyrsoft.sdbviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,13 +55,15 @@ public class SongDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, SongListActivity.class));
+            Intent upIntent = NavUtils.getParentActivityIntent(this);
+            if (upIntent == null || NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                // this activity is NOT part of this app's task, so create a new task when navigating up
+                navigateUpTo(upIntent);
+            } else {
+                // this activity is part of this app's task
+                finish();
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);
