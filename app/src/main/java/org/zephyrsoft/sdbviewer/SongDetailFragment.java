@@ -87,7 +87,6 @@ public class SongDetailFragment extends Fragment {
 
             SpannableStringBuilder formatted = new SpannableStringBuilder();
 
-            // TODO display lyrics / translation / chords as parsed
             for (SongParser.SongElement element : parsedSong) {
                 int start = formatted.length();
                 formatted.append(element.getElement());
