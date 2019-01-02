@@ -6,3 +6,5 @@ It cannot be used for anything else, so if you don't use Song Database, this pro
 
 If you find a bug or want a new feature, you are welcome to fix things yourself - 
 or file an issue in the [GitHub project](https://github.com/mathisdt/sdbviewer/) (or at least drop me a line)!
+
+[![Build Status](https://travis-ci.org/mathisdt/sdbviewer.svg?branch=master)](https://travis-ci.org/mathisdt/sdbviewer)
