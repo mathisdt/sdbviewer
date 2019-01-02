@@ -1,4 +1,12 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
+
+static def buildTime() {
+    def df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+    df.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"))
+    return df.format(new Date())
+}
 
 android {
     compileSdkVersion 27
@@ -16,6 +24,13 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+    }
+
+    // rename final APK files
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "SDBViewer_${variant.versionName}_${buildTime()}_${variant.buildType.name}${variant.signingReady ? "" : "-unsigned"}.apk"
+        }
     }
 }
 
