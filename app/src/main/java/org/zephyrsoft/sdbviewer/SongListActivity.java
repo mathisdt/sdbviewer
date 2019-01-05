@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,12 +41,29 @@ import java.util.List;
 public class SongListActivity extends AppCompatActivity {
 
     /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
      */
     private boolean mTwoPane;
 
+    /**
+     * The topmost item's index in the song list.
+     * Used to keep the scroll position after navigation or data reloads.
+     */
+    private int firstVisiblePosition = 0;
+
     private SDBFetcher fetcher;
+
+    @Override
+    protected void onPause() {
+        RecyclerView recyclerView = findViewById(R.id.song_list);
+        assert recyclerView != null;
+
+        firstVisiblePosition =
+            ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        Log.d(Constants.LOG_TAG, "saved first visible position " + firstVisiblePosition);
+
+        super.onPause();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +82,18 @@ public class SongListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-
-        View recyclerView = findViewById(R.id.song_list);
-        assert recyclerView != null;
-        loadAndShow((RecyclerView) recyclerView);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        RecyclerView recyclerView = findViewById(R.id.song_list);
+        assert recyclerView != null;
+
+        loadAndShow(recyclerView);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,7 +107,7 @@ public class SongListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 fetcher.invalidateSavedSongs(getApplicationContext());
-                loadAndShow((RecyclerView) findViewById(R.id.song_list));
+                loadAndShow(findViewById(R.id.song_list));
                 return true;
 
             case R.id.action_settings:
@@ -102,33 +127,29 @@ public class SongListActivity extends AppCompatActivity {
     private void loadAndShow(final @NonNull RecyclerView recyclerView) {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
+        String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
 
         findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
 
-        Consumer<FetchSongsResult> onDone = new Consumer<FetchSongsResult>() {
-            @Override
-            public void accept(FetchSongsResult result) {
-                if (result.hasException()) {
-                    Log.w(Constants.LOG_TAG, "could not load songs", result.getException());
-                    Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + url + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
-                } else {
-                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
-                }
-                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+        final String urlToUse = url;
+        Consumer<FetchSongsResult> onDone = result -> {
+            if (result.hasException()) {
+                Log.w(Constants.LOG_TAG, "could not load songs", result.getException());
+                Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+            } else {
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
+
+                recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
+                Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
             }
+            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         };
-        Runnable onAbort = new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-            }
-        };
+        Runnable onAbort = () -> findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
 
         try {
-            new FetchSongsTask(onDone, onAbort, url).execute();
+            new FetchSongsTask(onDone, onAbort, urlToUse).execute();
         } catch (Exception e) {
-            onDone.accept(new FetchSongsResult(e));
+            onDone.accept(new FetchSongsResult(e, urlToUse));
         }
     }
 
@@ -145,14 +166,26 @@ public class SongListActivity extends AppCompatActivity {
         }
 
         protected FetchSongsResult doInBackground(Void... nothing) {
-            List<Song> songs;
             try {
-                songs = fetcher.fetchSongs(getApplicationContext(), url);
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    try {
+                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
+                        return new FetchSongsResult(songs);
+                    } catch (Exception ex) {
+                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with http", ex);
+                    }
+                    try {
+                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "https://" + url);
+                        return new FetchSongsResult(songs);
+                    } catch (Exception ex) {
+                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https", ex);
+                    }
+                }
+                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
+                return new FetchSongsResult(songs);
             } catch (Exception e) {
-                return(new FetchSongsResult(e));
+                return(new FetchSongsResult(e, url));
             }
-
-            return new FetchSongsResult(songs);
         }
 
         @Override
@@ -168,13 +201,15 @@ public class SongListActivity extends AppCompatActivity {
     private static class FetchSongsResult {
         private List<Song> songs;
         private Exception exception;
+        private String usedUrl;
 
         FetchSongsResult(List<Song> songs) {
             this.songs = songs;
         }
 
-        FetchSongsResult(Exception exception) {
+        FetchSongsResult(Exception exception, String usedUrl) {
             this.exception = exception;
+            this.usedUrl = usedUrl;
         }
 
         boolean hasException() {
@@ -187,6 +222,14 @@ public class SongListActivity extends AppCompatActivity {
 
         Exception getException() {
             return exception;
+        }
+
+        public String getUsedUrl() {
+            return usedUrl;
+        }
+
+        public void setUsedUrl(String usedUrl) {
+            this.usedUrl = usedUrl;
         }
     }
 

@@ -61,10 +61,10 @@ public class SongDetailFragment extends Fragment {
         }
     }
 
-    private boolean getBooleanPreference(String key, boolean defaultValue) {
+    private boolean getBooleanPreference(String key) {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(getContext());
-        return sharedPreferences.getBoolean(key, defaultValue);
+        return sharedPreferences.getBoolean(key, true);
     }
 
     @Override
@@ -73,12 +73,14 @@ public class SongDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.song_detail, container, false);
 
         if (song != null) {
-            boolean showTranslation = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_translation), true);
-            boolean showChords = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_chords), true);
+            boolean showTranslation = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_translation));
+            boolean showChords = getBooleanPreference(inflater.getContext().getString(R.string.pref_show_chords));
 
-            List<SongParser.SongElement> parsedSong = SongParser.parseLyrics(song, showChords, showTranslation);
+            List<SongParser.SongElement> parsedLyrics = SongParser.parseLyrics(song, showChords, showTranslation);
+            List<SongParser.SongElement> parsedCopyright = SongParser.parseCopyright(song);
+
             boolean parsedSongContainsChords = false;
-            for (SongParser.SongElement element : parsedSong) {
+            for (SongParser.SongElement element : parsedLyrics) {
                 if (element.getType() == SongParser.SongElementEnum.CHORDS) {
                     parsedSongContainsChords = true;
                     break;
@@ -87,7 +89,7 @@ public class SongDetailFragment extends Fragment {
 
             SpannableStringBuilder formatted = new SpannableStringBuilder();
 
-            for (SongParser.SongElement element : parsedSong) {
+            for (SongParser.SongElement element : parsedLyrics) {
                 int start = formatted.length();
                 formatted.append(element.getElement());
                 int end = formatted.length();
@@ -101,6 +103,18 @@ public class SongDetailFragment extends Fragment {
                     formatted.setSpan(new TypefaceSpan("monospace"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     formatted.setSpan(new RelativeSizeSpan(0.8f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+            }
+
+            if (parsedCopyright.size() > 0) {
+                formatted.append("\n\n");
+            }
+            for (SongParser.SongElement element : parsedCopyright) {
+                int start = formatted.length();
+                formatted.append("\n").append(element.getElement());
+                int end = formatted.length();
+
+                formatted.setSpan(new RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                formatted.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
             ((TextView) rootView.findViewById(R.id.song_detail)).setText(formatted);

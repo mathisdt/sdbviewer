@@ -11,7 +11,6 @@ import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
 
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.zephyrsoft.sdbviewer.Constants;
 import org.zephyrsoft.sdbviewer.R;
@@ -44,7 +43,7 @@ public class SDBFetcher {
         Registry.register(SDBFetcher.class, new SDBFetcher());
     }
 
-    public List<Song> fetchSongs(Context context, String url) {
+    private boolean shouldUseSavedData(Context context) {
         try {
             if (fileExists(context, Constants.FILE_LAST_UPDATED)
                 && fileExists(context, Constants.FILE_SONGS)) {
@@ -58,11 +57,21 @@ public class SDBFetcher {
                 long millisSinceLastReload = new Date().getTime() - lastUpdated.getTime();
                 int hoursSinceLastReload = (int) (millisSinceLastReload / 1000 / 60 / 60);
 
-                if (hoursSinceLastReload <= hoursBetweenReloads) {
-                    String songsXml = readFile(context, Constants.FILE_SONGS);
-                    Log.i(Constants.LOG_TAG, "loaded songs from local storage (" + hoursSinceLastReload + " hours old)");
-                    return deserializeFromXml(songsXml);
-                }
+                Log.i(Constants.LOG_TAG,"songs in local storage are " + hoursSinceLastReload + " hours old");
+                return hoursSinceLastReload <= hoursBetweenReloads;
+            }
+        } catch (Exception e) {
+            Log.w(Constants.LOG_TAG, "could not determine if the saved data should be used", e);
+        }
+        return false;
+    }
+
+    public List<Song> fetchSongs(Context context, String url) {
+        try {
+            if (shouldUseSavedData(context)) {
+                String songsXml = readFile(context, Constants.FILE_SONGS);
+                Log.i(Constants.LOG_TAG, "loaded songs from local storage");
+                return deserializeFromXml(songsXml);
             }
         } catch (Exception e) {
             Log.w(Constants.LOG_TAG, "could not use saved songs data", e);
@@ -75,12 +84,14 @@ public class SDBFetcher {
         String songsXml = fetchRawDataFromNetwork(url);
         Log.i(Constants.LOG_TAG, "loaded songs from " + url);
 
+        List<Song> songs = deserializeFromXml(songsXml);
+
         // cache data until next download
         writeFile(context, Constants.FILE_SONGS, songsXml);
         writeFile(context, Constants.FILE_LAST_UPDATED, DateFormat.getDateTimeInstance().format(new Date()));
         Log.i(Constants.LOG_TAG, "wrote songs to local storage");
 
-        return deserializeFromXml(songsXml);
+        return songs;
     }
 
     public void invalidateSavedSongs(Context context) {
@@ -181,14 +192,11 @@ public class SDBFetcher {
     }
 
     private GsonXml createGsonXml() {
-        XmlParserCreator parserCreator = new XmlParserCreator() {
-            @Override
-            public XmlPullParser createParser() {
-                try {
-                    return XmlPullParserFactory.newInstance().newPullParser();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+        XmlParserCreator parserCreator = () -> {
+            try {
+                return XmlPullParserFactory.newInstance().newPullParser();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         };
 

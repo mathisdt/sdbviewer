@@ -15,6 +15,9 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
+import org.zephyrsoft.sdbviewer.registry.Registry;
+
 import java.util.List;
 
 /**
@@ -34,30 +37,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+        String stringValue = value.toString();
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
+        if (preference instanceof ListPreference) {
+            // For list preferences, look up the correct display value in
+            // the preference's 'entries' list.
+            ListPreference listPreference = (ListPreference) preference;
+            int index = listPreference.findIndexOfValue(stringValue);
 
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                    index >= 0
-                        ? listPreference.getEntries()[index]
-                        : null);
+            // Set the summary to reflect the new value.
+            preference.setSummary(
+                index >= 0
+                    ? listPreference.getEntries()[index]
+                    : null);
 
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
+        } else {
+            // For all other preferences, set the summary to the value's
+            // simple string representation.
+            preference.setSummary(stringValue);
         }
+        return true;
     };
 
     /**
@@ -111,9 +111,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
+            Intent upIntent = NavUtils.getParentActivityIntent(this);
+            if (upIntent == null || NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                // this activity is NOT part of this app's task, so create a new task when navigating up
+                navigateUpTo(upIntent);
+            } else {
+                // this activity is part of this app's task
+                finish();
             }
+
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -164,6 +170,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_url)));
             bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_reload_interval)));
+
+            findPreference(getActivity().getString(R.string.pref_songs_url))
+                .setOnPreferenceChangeListener((preference, newValue) -> {
+                    Registry.get(SDBFetcher.class).invalidateSavedSongs(getActivity());
+                    return true;
+                });
         }
 
         @Override

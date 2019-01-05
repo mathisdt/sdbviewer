@@ -17,39 +17,13 @@ public class SongParser {
 	private static final String LABEL_TRANSLATION = "Translation: ";
 	private static final String LABEL_PUBLISHER = "Publisher: ";
 	
-	private static final Pattern TRANSLATION_PATTERN = Pattern.compile("^(.*)\\[(.*)\\](.*)$");
+	private static final Pattern TRANSLATION_PATTERN = Pattern.compile("^(.*)\\[(.*)](.*)$");
 	private static final String NEWLINE_REGEX = "\r?+\n";
 	
 	private SongParser() {
 		// this class should only be used statically
 	}
 	
-	/**
-	 * Breaks down a {@link Song} into its elements. See {@link SongElementEnum} for more information about the line
-	 * break policy used in the returned list!
-	 * 
-	 * @param song
-	 *            the song to parse
-	 * @param includeTitle
-	 *            should the title be included?
-	 * @param includeChords
-	 *            should all the chord lines be included?
-	 * @return a list containing the elements, marked up using {@link SongElementEnum}s
-	 */
-	public static List<SongElement> parse(Song song, boolean includeTitle, boolean includeChords) {
-		List<SongElement> ret = new ArrayList<>();
-		
-		if (includeTitle) {
-			ret.add(new SongElement(SongElementEnum.TITLE, song.getTitle() == null ? "" : song.getTitle()));
-		}
-		
-		ret.addAll(parseLyrics(song, includeChords, true));
-
-		ret.addAll(parseCopyright(song));
-		
-		return ret;
-	}
-
 	public static List<SongElement> parseLyrics(Song song, boolean includeChords, boolean includeTranslation) {
 		List<SongElement> ret = new ArrayList<>();
 
