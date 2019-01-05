@@ -45,12 +45,6 @@ public class SongListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
-    /**
-     * The topmost item's index in the song list.
-     * Used to keep the scroll position after navigation or data reloads.
-     */
-    private int firstVisiblePosition = 0;
-
     private SDBFetcher fetcher;
 
     @Override
@@ -64,8 +58,9 @@ public class SongListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.song_list);
         assert recyclerView != null;
 
-        firstVisiblePosition =
+        int firstVisiblePosition =
             ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        ((SDBViewerApplication) getApplication()).setFirstVisiblePosition(firstVisiblePosition);
         Log.d(Constants.LOG_TAG, "saved first visible position " + firstVisiblePosition);
     }
 
@@ -144,6 +139,7 @@ public class SongListActivity extends AppCompatActivity {
             } else {
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
 
+                int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
                 recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
                 Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
             }

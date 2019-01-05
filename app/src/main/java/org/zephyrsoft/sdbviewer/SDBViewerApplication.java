@@ -36,6 +36,13 @@ import static org.acra.ReportField.USER_CRASH_DATE;
     resText = R.string.acra_text,
     resCommentPrompt = R.string.acra_comment_prompt)
 public class SDBViewerApplication extends Application {
+
+    /**
+     * The topmost item's index in the song list.
+     * Used to keep the scroll position after navigation or data reloads.
+     */
+    private int firstVisiblePosition = 0;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -43,5 +50,13 @@ public class SDBViewerApplication extends Application {
         ACRA.init(this);
 
         SDBFetcher.createAndRegisterInstance();
+    }
+
+    public int getFirstVisiblePosition() {
+        return firstVisiblePosition;
+    }
+
+    public void setFirstVisiblePosition(int firstVisiblePosition) {
+        this.firstVisiblePosition = firstVisiblePosition;
     }
 }
