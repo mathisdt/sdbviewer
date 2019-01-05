@@ -55,14 +55,18 @@ public class SongListActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        saveFirstVisiblePosition();
+
+        super.onPause();
+    }
+
+    private void saveFirstVisiblePosition() {
         RecyclerView recyclerView = findViewById(R.id.song_list);
         assert recyclerView != null;
 
         firstVisiblePosition =
             ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
         Log.d(Constants.LOG_TAG, "saved first visible position " + firstVisiblePosition);
-
-        super.onPause();
     }
 
     @Override
@@ -106,6 +110,7 @@ public class SongListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
+                saveFirstVisiblePosition();
                 fetcher.invalidateSavedSongs(getApplicationContext());
                 loadAndShow(findViewById(R.id.song_list));
                 return true;
@@ -149,7 +154,7 @@ public class SongListActivity extends AppCompatActivity {
         try {
             new FetchSongsTask(onDone, onAbort, urlToUse).execute();
         } catch (Exception e) {
-            onDone.accept(new FetchSongsResult(e, urlToUse));
+            onDone.accept(new FetchSongsResult(e));
         }
     }
 
@@ -184,7 +189,7 @@ public class SongListActivity extends AppCompatActivity {
                 List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
                 return new FetchSongsResult(songs);
             } catch (Exception e) {
-                return(new FetchSongsResult(e, url));
+                return(new FetchSongsResult(e));
             }
         }
 
@@ -201,15 +206,13 @@ public class SongListActivity extends AppCompatActivity {
     private static class FetchSongsResult {
         private List<Song> songs;
         private Exception exception;
-        private String usedUrl;
 
         FetchSongsResult(List<Song> songs) {
             this.songs = songs;
         }
 
-        FetchSongsResult(Exception exception, String usedUrl) {
+        FetchSongsResult(Exception exception) {
             this.exception = exception;
-            this.usedUrl = usedUrl;
         }
 
         boolean hasException() {
@@ -222,14 +225,6 @@ public class SongListActivity extends AppCompatActivity {
 
         Exception getException() {
             return exception;
-        }
-
-        public String getUsedUrl() {
-            return usedUrl;
-        }
-
-        public void setUsedUrl(String usedUrl) {
-            this.usedUrl = usedUrl;
         }
     }
 
