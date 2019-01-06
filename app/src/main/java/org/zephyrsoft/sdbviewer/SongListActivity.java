@@ -182,7 +182,7 @@ public class SongListActivity extends AppCompatActivity {
                         Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https", ex);
                     }
                 }
-                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
+                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), url);
                 return new FetchSongsResult(songs);
             } catch (Exception e) {
                 return(new FetchSongsResult(e));
