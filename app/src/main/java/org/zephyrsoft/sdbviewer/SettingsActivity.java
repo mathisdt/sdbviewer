@@ -36,8 +36,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
+     * This has to be the ONLY CHANGELISTENER - there can be only one (no add method, but just a set method).
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+    private static Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener = (preference, value) -> {
         String stringValue = value.toString();
 
         if (preference instanceof ListPreference) {
@@ -57,6 +58,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // simple string representation.
             preference.setSummary(stringValue);
         }
+
+        if (preference.getKey().equals(preference.getContext().getString(R.string.pref_songs_url))) {
+            Registry.get(SDBFetcher.class).invalidateSavedSongs(preference.getContext());
+        }
+
         return true;
     };
 
@@ -76,15 +82,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @see #sBindPreferenceSummaryToValueListener
+     * @see #bindPreferenceSummaryToValueListener
      */
     private static void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+        preference.setOnPreferenceChangeListener(bindPreferenceSummaryToValueListener);
 
         // Trigger the listener immediately with the preference's
         // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+        bindPreferenceSummaryToValueListener.onPreferenceChange(preference,
             PreferenceManager
                 .getDefaultSharedPreferences(preference.getContext())
                 .getString(preference.getKey(), ""));
@@ -170,12 +176,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_url)));
             bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_reload_interval)));
-
-            findPreference(getActivity().getString(R.string.pref_songs_url))
-                .setOnPreferenceChangeListener((preference, newValue) -> {
-                    Registry.get(SDBFetcher.class).invalidateSavedSongs(getActivity());
-                    return true;
-                });
         }
 
         @Override

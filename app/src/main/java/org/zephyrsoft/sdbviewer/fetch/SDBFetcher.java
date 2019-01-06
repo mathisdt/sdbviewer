@@ -99,6 +99,7 @@ public class SDBFetcher {
             if (fileExists(context, Constants.FILE_LAST_UPDATED)) {
                 context.deleteFile(Constants.FILE_LAST_UPDATED);
             }
+            Log.i(Constants.LOG_TAG, "invalidated the locally saved file");
         } catch(Exception e) {
             Log.e(Constants.LOG_TAG, "error while deleting file " + Constants.FILE_LAST_UPDATED, e);
             throw new IllegalStateException("error while deleting file " + Constants.FILE_LAST_UPDATED);
