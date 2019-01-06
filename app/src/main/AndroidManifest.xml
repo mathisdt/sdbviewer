@@ -41,6 +41,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.zephyrsoft.sdbviewer.SongListActivity"/>
         </activity>
+        <activity android:name=".AboutActivity"
+                  android:label="@string/about"
+                  android:parentActivityName=".SongListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.zephyrsoft.sdbviewer.SongListActivity"/>
+        </activity>
     </application>
 
 </manifest>

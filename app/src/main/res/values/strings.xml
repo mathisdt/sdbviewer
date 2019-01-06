@@ -24,4 +24,7 @@
 
     <string name="pref_show_chords">pref_show_chords</string>
     <string name="pref_show_chords_desc">Show chords (if present)</string>
+    <string name="about">About</string>
+    <string name="aboutText">TO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO</string>
+    <string name="versionDescription">Version:</string>
 </resources>

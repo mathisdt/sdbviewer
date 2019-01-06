@@ -111,9 +111,15 @@ public class SongListActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_settings:
-                Context context = getApplicationContext();
-                Intent intent = new Intent(context, SettingsActivity.class);
-                context.startActivity(intent);
+                Context contextSettings = getApplicationContext();
+                Intent intentSettings = new Intent(contextSettings, SettingsActivity.class);
+                contextSettings.startActivity(intentSettings);
+                return true;
+
+            case R.id.action_about:
+                Context contextAbout = getApplicationContext();
+                Intent intentAbout = new Intent(contextAbout, AboutActivity.class);
+                contextAbout.startActivity(intentAbout);
                 return true;
 
             default:
