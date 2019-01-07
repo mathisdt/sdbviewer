@@ -32,7 +32,7 @@ public class AboutActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_about);
 
-        ((TextView) findViewById(R.id.versionTextView)).setText("Version: " + getVersionName());
+        ((TextView) findViewById(R.id.versionTextView)).setText("SDB Viewer " + getVersionName());
     }
 
     @Override

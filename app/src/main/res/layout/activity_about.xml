@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/text_margin"
             android:text=""
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
@@ -26,8 +27,10 @@
             android:id="@+id/aboutTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autoLink="web|email"
             android:padding="@dimen/text_margin"
             android:text="@string/aboutText"
+            android:textColor="@android:color/black"
             android:textSize="18sp"/>
     </LinearLayout>
 </ScrollView>

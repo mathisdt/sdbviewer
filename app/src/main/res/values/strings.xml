@@ -25,6 +25,13 @@
     <string name="pref_show_chords">pref_show_chords</string>
     <string name="pref_show_chords_desc">Show chords (if present)</string>
     <string name="about">About</string>
-    <string name="aboutText">TO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO\n\n\nTO DO</string>
+    <string name="aboutText">The Song Database (SDB) is a program for desktop PCs and notebooks to show lyrics on a digital projector for worship in a congregation. It is available for free for all major platforms, see https://zephyrsoft.org/sdb for more information.
+        \n\n<b>This app can display the data produced and managed by Song Database if the file is accessible via a URL (web address).</b> This app cannot be used for anything else, so if you don\'t use Song Database, this probably isn\'t for you!
+        \n\nIf you don\'t want to upload the file containing the songs every time you modify it in SDB, you could set up a synchronisation solution like Nextcloud (see https://nextcloud.com for more information) and use the "share link" functionality - the resulting link has to be used in this app.
+        \n\nSDB Viewer asks for the INTERNET permission - without it, the app can\'t download the file containing the song data. If a crash occurs, the app will offer to send a crash report to the developer to help fix the problem. If you agree it will send the error message and some metadata. Any data sent this way will be handled confidentially and only used to fix the problem.
+        \n\n<b>This is an open source project</b>, so if there is anything you don\'t like, you are very welcome to contact me or even write some code yourself and contribute it. Please don\'t try to communicate with me via reviews, that doesn\'t work in both directions. Just write me an email, and I\'ll see what I can do - web site and email address as stated below.
+        \n\nhttps://zephyrsoft.org/sdbviewer
+        \nandroid@zephyrsoft.org\n
+    </string>
     <string name="versionDescription">Version:</string>
 </resources>
