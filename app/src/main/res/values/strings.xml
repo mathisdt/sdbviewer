@@ -31,7 +31,7 @@
         \n\nSDB Viewer asks for the INTERNET permission - without it, the app can\'t download the file containing the song data. If a crash occurs, the app will offer to send a crash report to the developer to help fix the problem. If you agree it will send the error message and some metadata. Any data sent this way will be handled confidentially and only used to fix the problem.
         \n\n<b>This is an open source project</b>, so if there is anything you don\'t like, you are very welcome to contact me or even write some code yourself and contribute it. Please don\'t try to communicate with me via reviews, that doesn\'t work in both directions. Just write me an email, and I\'ll see what I can do - web site and email address as stated below.
         \n\nhttps://zephyrsoft.org/sdbviewer
-        \nandroid@zephyrsoft.org\n
+        \n\nandroid@zephyrsoft.org\n
     </string>
     <string name="versionDescription">Version:</string>
 </resources>
