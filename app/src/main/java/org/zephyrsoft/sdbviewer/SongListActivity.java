@@ -140,7 +140,7 @@ public class SongListActivity extends AppCompatActivity {
         final String urlToUse = url;
         Consumer<FetchSongsResult> onDone = result -> {
             if (result.hasException()) {
-                Log.w(Constants.LOG_TAG, "could not load songs", result.getException());
+                Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
                 Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
             } else {
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
@@ -179,13 +179,13 @@ public class SongListActivity extends AppCompatActivity {
                         List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
-                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with http", ex);
+                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with http: " + ex.getMessage(), ex);
                     }
                     try {
                         List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "https://" + url);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
-                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https", ex);
+                        Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https: " + ex.getMessage(), ex);
                     }
                 }
                 List<Song> songs = fetcher.fetchSongs(getApplicationContext(), url);

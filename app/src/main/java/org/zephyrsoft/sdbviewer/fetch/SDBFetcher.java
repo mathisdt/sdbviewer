@@ -61,7 +61,7 @@ public class SDBFetcher {
                 return hoursSinceLastReload <= hoursBetweenReloads;
             }
         } catch (Exception e) {
-            Log.w(Constants.LOG_TAG, "could not determine if the saved data should be used", e);
+            Log.w(Constants.LOG_TAG, "could not determine if the saved data should be used: " + e.getMessage(), e);
         }
         return false;
     }
@@ -74,7 +74,7 @@ public class SDBFetcher {
                 return deserializeFromXml(songsXml);
             }
         } catch (Exception e) {
-            Log.w(Constants.LOG_TAG, "could not use saved songs data", e);
+            Log.w(Constants.LOG_TAG, "could not use saved songs data: " + e.getMessage(), e);
         }
 
         return fetchSongsFromNetwork(context, url);
@@ -116,7 +116,7 @@ public class SDBFetcher {
             }
             return false;
         } catch(Exception e) {
-            Log.e(Constants.LOG_TAG, "error while checking existence of file " + filename, e);
+            Log.e(Constants.LOG_TAG, "error while checking existence of file " + filename + ": " + e.getMessage(), e);
             throw new IllegalStateException("error while checking existence of file " + filename);
         }
     }
@@ -136,7 +136,7 @@ public class SDBFetcher {
             bufferedReader.close();
             return sb.toString();
         } catch(Exception e) {
-            Log.e(Constants.LOG_TAG, "error while reading file " + filename, e);
+            Log.e(Constants.LOG_TAG, "error while reading file " + filename + ": " + e.getMessage(), e);
             throw new IllegalStateException("error while reading file " + filename);
         }
     }
@@ -147,7 +147,7 @@ public class SDBFetcher {
             outputStream.write(content.getBytes());
             outputStream.close();
         } catch(Exception e) {
-            Log.e(Constants.LOG_TAG, "error while writing to file " + filename, e);
+            Log.e(Constants.LOG_TAG, "error while writing to file " + filename + ": " + e.getMessage(), e);
             throw new IllegalStateException("error while writing to file " + filename);
         }
     }
@@ -171,7 +171,7 @@ public class SDBFetcher {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "error while fetching raw data from network", e);
+            Log.e(LOG_TAG, "error while fetching raw data from network: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
         return songsXml;

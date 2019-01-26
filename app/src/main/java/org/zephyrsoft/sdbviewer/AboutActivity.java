@@ -16,7 +16,7 @@ public class AboutActivity extends AppCompatActivity {
         try {
             return getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(Constants.LOG_TAG, "could not get version name from manifest", e);
+            Log.e(Constants.LOG_TAG, "could not get version name from manifest: " + e.getMessage(), e);
             return "?";
         }
     }
