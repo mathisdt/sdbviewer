@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,7 +73,7 @@ public class SongListActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        toolbar.setLogo(R.mipmap.ic_icon);
 
         if (findViewById(R.id.song_detail_container) != null) {
             // The detail container view will be present only in the
@@ -98,6 +99,27 @@ public class SongListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setIconifiedByDefault(true);
+        searchView.setOnCloseListener(() -> handleSearchText(""));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return handleSearchText(query);
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return handleSearchText(newText);
+            }
+        });
+
+        return true;
+    }
+
+    private boolean handleSearchText(String searchText) {
+        Log.i(Constants.LOG_TAG, "search text entered: " + searchText);
+        // TODO
         return true;
     }
 

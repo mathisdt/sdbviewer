@@ -34,4 +34,5 @@
         \n\nandroid@zephyrsoft.org\n
     </string>
     <string name="versionDescription">Version:</string>
+    <string name="search">Search</string>
 </resources>
