@@ -19,3 +19,5 @@ Song Database, this probably isn't for you!
 If you find a bug or want a new feature, you are welcome to
 [file an issue](https://github.com/mathisdt/sdbviewer/issues) or even fix things yourself
 and create a pull request.
+Please don't try to communicate with me via reviews on Google Play or AndroidPit, that doesn't work in both directions.
+You can also [write me an email](http://zephyrsoft.org/contact-about-me) and I'll see what I can do.
