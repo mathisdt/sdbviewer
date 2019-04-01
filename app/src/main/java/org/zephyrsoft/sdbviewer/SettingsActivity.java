@@ -1,6 +1,7 @@
 package org.zephyrsoft.sdbviewer;
 
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,9 +15,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-
-import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
-import org.zephyrsoft.sdbviewer.registry.Registry;
 
 import java.util.List;
 
@@ -38,33 +36,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * to reflect its new value.
      * This has to be the ONLY CHANGELISTENER - there can be only one (no add method, but just a set method).
      */
-    private static Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener = (preference, value) -> {
-        String stringValue = value.toString();
+    private static Preference.OnPreferenceChangeListener createBindPreferenceSummaryToValueListener(Application application) {
+        return (preference, value) -> {
+            String stringValue = value.toString();
 
-        if (preference instanceof ListPreference) {
-            // For list preferences, look up the correct display value in
-            // the preference's 'entries' list.
-            ListPreference listPreference = (ListPreference) preference;
-            int index = listPreference.findIndexOfValue(stringValue);
+            if (preference instanceof ListPreference) {
+                // For list preferences, look up the correct display value in
+                // the preference's 'entries' list.
+                ListPreference listPreference = (ListPreference) preference;
+                int index = listPreference.findIndexOfValue(stringValue);
 
-            // Set the summary to reflect the new value.
-            preference.setSummary(
-                index >= 0
-                    ? listPreference.getEntries()[index]
-                    : null);
+                // Set the summary to reflect the new value.
+                preference.setSummary(
+                    index >= 0
+                        ? listPreference.getEntries()[index]
+                        : null);
 
-        } else {
-            // For all other preferences, set the summary to the value's
-            // simple string representation.
-            preference.setSummary(stringValue);
-        }
+            } else {
+                // For all other preferences, set the summary to the value's
+                // simple string representation.
+                preference.setSummary(stringValue);
+            }
 
-        if (preference.getKey().equals(preference.getContext().getString(R.string.pref_songs_url))) {
-            Registry.get(SDBFetcher.class).invalidateSavedSongs(preference.getContext());
-        }
+            if (preference.getKey().equals(preference.getContext().getString(R.string.pref_songs_url))) {
+                ((SDBViewerApplication) application).getSdbFetcher().invalidateSavedSongs(preference.getContext());
+            }
 
-        return true;
-    };
+            return true;
+        };
+    }
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -82,10 +82,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @see #bindPreferenceSummaryToValueListener
+     * @see #createBindPreferenceSummaryToValueListener
      */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
+    private static void bindPreferenceSummaryToValue(Preference preference, Application application) {
         // Set the listener to watch for value changes.
+        Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener = createBindPreferenceSummaryToValueListener(application);
         preference.setOnPreferenceChangeListener(bindPreferenceSummaryToValueListener);
 
         // Trigger the listener immediately with the preference's
@@ -174,8 +175,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_url)));
-            bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_reload_interval)));
+            bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_url)), getActivity().getApplication());
+            bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_songs_reload_interval)), getActivity().getApplication());
         }
 
         @Override

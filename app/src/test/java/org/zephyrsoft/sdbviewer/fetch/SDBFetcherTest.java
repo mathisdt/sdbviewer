@@ -10,6 +10,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
 import org.zephyrsoft.sdbviewer.model.Song;
 
 import java.util.List;
@@ -39,8 +40,9 @@ public class SDBFetcherTest {
     public void setup() {
         PowerMockito.mockStatic(Log.class);
         Mockito.when(Log.e(anyString(), anyString())).thenReturn(1);
+        DatabaseAccess databaseAccess = Mockito.mock(DatabaseAccess.class);
 
-        fetcher = new SDBFetcher();
+        fetcher = new SDBFetcher(databaseAccess);
     }
 
     @Test

@@ -14,8 +14,8 @@ import com.stanfy.gsonxml.XmlParserCreator;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.zephyrsoft.sdbviewer.Constants;
 import org.zephyrsoft.sdbviewer.R;
+import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
 import org.zephyrsoft.sdbviewer.model.Song;
-import org.zephyrsoft.sdbviewer.registry.Registry;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -39,14 +39,15 @@ public class SDBFetcher {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
-    public static void createAndRegisterInstance() {
-        Registry.register(SDBFetcher.class, new SDBFetcher());
+    private DatabaseAccess databaseAccess;
+
+    public SDBFetcher(DatabaseAccess databaseAccess) {
+        this.databaseAccess = databaseAccess;
     }
 
     private boolean shouldUseSavedData(Context context) {
         try {
-            if (fileExists(context, Constants.FILE_LAST_UPDATED)
-                && fileExists(context, Constants.FILE_SONGS)) {
+            if (fileExists(context, Constants.FILE_LAST_UPDATED)) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
                 String hoursBetweenReloadsString = sharedPreferences.getString(context.getString(R.string.pref_songs_reload_interval),
                     String.valueOf(context.getResources().getInteger(R.integer.pref_songs_reload_interval_default)));
@@ -66,12 +67,10 @@ public class SDBFetcher {
         return false;
     }
 
-    public List<Song> fetchSongs(Context context, String url) {
+    public List<Song> fetchSongs(Context context, String url, String filter) {
         try {
             if (shouldUseSavedData(context)) {
-                String songsXml = readFile(context, Constants.FILE_SONGS);
-                Log.i(Constants.LOG_TAG, "loaded songs from local storage");
-                return deserializeFromXml(songsXml);
+                return databaseAccess.selectFiltered(filter);
             }
         } catch (Exception e) {
             Log.w(Constants.LOG_TAG, "could not use saved songs data: " + e.getMessage(), e);
@@ -87,7 +86,7 @@ public class SDBFetcher {
         List<Song> songs = deserializeFromXml(songsXml);
 
         // cache data until next download
-        writeFile(context, Constants.FILE_SONGS, songsXml);
+        databaseAccess.resetContents(songs);
         writeFile(context, Constants.FILE_LAST_UPDATED, DateFormat.getDateTimeInstance().format(new Date()));
         Log.i(Constants.LOG_TAG, "wrote songs to local storage");
 

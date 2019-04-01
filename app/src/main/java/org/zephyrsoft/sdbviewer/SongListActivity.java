@@ -26,7 +26,6 @@ import android.widget.Toast;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.parser.SongParser;
-import org.zephyrsoft.sdbviewer.registry.Registry;
 import org.zephyrsoft.sdbviewer.util.Consumer;
 
 import java.util.List;
@@ -68,7 +67,7 @@ public class SongListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetcher = Registry.get(SDBFetcher.class);
+        fetcher = ((SDBViewerApplication) getApplication()).getSdbFetcher();
         setContentView(R.layout.activity_song_list);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -91,7 +90,7 @@ public class SongListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.song_list);
         assert recyclerView != null;
 
-        loadAndShow(recyclerView);
+        loadAndShow(recyclerView, null);
     }
 
 
@@ -113,13 +112,19 @@ public class SongListActivity extends AppCompatActivity {
                 return handleSearchText(newText);
             }
         });
+        searchView.setOnCloseListener(() -> {
+            handleSearchText(null);
+            return true;
+        });
 
         return true;
     }
 
     private boolean handleSearchText(String searchText) {
-        Log.i(Constants.LOG_TAG, "search text entered: " + searchText);
-        // TODO
+        String filter = searchText == null ? null : searchText.toLowerCase().replaceAll("[\\p{Space}\\p{Punct}]++", " ");
+        Log.i(Constants.LOG_TAG, "search text entered: " + searchText + " / filter text used: " + filter);
+        RecyclerView recyclerView = findViewById(R.id.song_list);
+        ((SimpleItemRecyclerViewAdapter)recyclerView.getAdapter()).filter(filter);
         return true;
     }
 
@@ -129,7 +134,7 @@ public class SongListActivity extends AppCompatActivity {
             case R.id.action_refresh:
                 saveFirstVisiblePosition();
                 fetcher.invalidateSavedSongs(getApplicationContext());
-                loadAndShow(findViewById(R.id.song_list));
+                loadAndShow(findViewById(R.id.song_list), null);
                 return true;
 
             case R.id.action_settings:
@@ -152,31 +157,36 @@ public class SongListActivity extends AppCompatActivity {
         }
     }
 
-    private void loadAndShow(final @NonNull RecyclerView recyclerView) {
+    private String getUrl() {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String url = sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
+        return sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
+    }
 
+    private void loadAndShow(final @NonNull RecyclerView recyclerView, String filter) {
         findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
 
-        final String urlToUse = url;
+        final String urlToUse = getUrl();
         Consumer<FetchSongsResult> onDone = result -> {
-            if (result.hasException()) {
-                Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
-                Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
-            } else {
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, result.getSongs(), mTwoPane));
+            try {
+                if (result.hasException()) {
+                    Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
+                    Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+                } else {
+                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, fetcher, result.getSongs(), mTwoPane));
 
-                int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
-                recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
-                Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
+                    int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
+                    recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
+                    Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
+                }
+            } finally {
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
             }
-            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         };
         Runnable onAbort = () -> findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
 
         try {
-            new FetchSongsTask(onDone, onAbort, urlToUse).execute();
+            new FetchSongsTask(onDone, onAbort, urlToUse, filter).execute();
         } catch (Exception e) {
             onDone.accept(new FetchSongsResult(e));
         }
@@ -187,30 +197,32 @@ public class SongListActivity extends AppCompatActivity {
         private Consumer<FetchSongsResult> onDone;
         private Runnable onAbort;
         private String url;
+        private String filter;
 
-        FetchSongsTask(Consumer<FetchSongsResult> onDone, Runnable onAbort, String url) {
+        FetchSongsTask(Consumer<FetchSongsResult> onDone, Runnable onAbort, String url, String filter) {
             this.onDone = onDone;
             this.onAbort = onAbort;
             this.url = url;
+            this.filter = filter;
         }
 
         protected FetchSongsResult doInBackground(Void... nothing) {
             try {
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
                     try {
-                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url);
+                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url, filter);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
                         Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with http: " + ex.getMessage(), ex);
                     }
                     try {
-                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "https://" + url);
+                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "https://" + url, filter);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
                         Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https: " + ex.getMessage(), ex);
                     }
                 }
-                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), url);
+                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), url, filter);
                 return new FetchSongsResult(songs);
             } catch (Exception e) {
                 return(new FetchSongsResult(e));
@@ -252,11 +264,12 @@ public class SongListActivity extends AppCompatActivity {
         }
     }
 
-    public static class SimpleItemRecyclerViewAdapter
+    private class SimpleItemRecyclerViewAdapter
         extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final SongListActivity mParentActivity;
-        private final List<Song> mValues;
+        private final SDBFetcher fetcher;
+        private List<Song> mValuesFiltered;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
@@ -282,11 +295,18 @@ public class SongListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(SongListActivity parent,
+                                      SDBFetcher fetcher,
                                       List<Song> items,
                                       boolean twoPane) {
-            mValues = items;
+            mValuesFiltered = items;
             mParentActivity = parent;
+            this.fetcher = fetcher;
             mTwoPane = twoPane;
+        }
+
+        void filter(String filterText) {
+            mValuesFiltered = fetcher.fetchSongs(mParentActivity, getUrl(), filterText);
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -299,7 +319,7 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-            Song song = mValues.get(position);
+            Song song = mValuesFiltered.get(position);
             holder.mIdView.setText(song.getTitle());
             holder.mContentView.setText(SongParser.getFirstLyricsLine(song));
 
@@ -309,7 +329,7 @@ public class SongListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mValuesFiltered.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {

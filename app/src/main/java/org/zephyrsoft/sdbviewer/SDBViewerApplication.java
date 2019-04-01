@@ -8,6 +8,7 @@ import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraHttpSender;
 import org.acra.data.StringFormat;
 import org.acra.sender.HttpSender;
+import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 
 import static org.acra.ReportField.ANDROID_VERSION;
@@ -43,13 +44,17 @@ public class SDBViewerApplication extends Application {
      */
     private int firstVisiblePosition = 0;
 
+    private SDBFetcher sdbFetcher;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         ACRA.init(this);
 
-        SDBFetcher.createAndRegisterInstance();
+        // create services and connect them:
+        DatabaseAccess databaseAccess = new DatabaseAccess(this);
+        sdbFetcher = new SDBFetcher(databaseAccess);
     }
 
     public int getFirstVisiblePosition() {
@@ -58,5 +63,9 @@ public class SDBViewerApplication extends Application {
 
     public void setFirstVisiblePosition(int firstVisiblePosition) {
         this.firstVisiblePosition = firstVisiblePosition;
+    }
+
+    public SDBFetcher getSdbFetcher() {
+        return sdbFetcher;
     }
 }
