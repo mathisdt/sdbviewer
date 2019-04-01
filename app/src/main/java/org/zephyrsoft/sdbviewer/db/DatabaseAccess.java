@@ -127,7 +127,7 @@ public class DatabaseAccess {
                     null, null, null, COL_TITLE + "," + COL_UUID);
             } else {
                 cursor = builder.query(getReadableDatabase(), null, TABLE + " MATCH ?",
-                    new String[] {"*" + filter + "*"}, null, null, COL_TITLE + "," + COL_UUID);
+                    new String[] {"\"*" + filter + "*\""}, null, null, COL_TITLE + "," + COL_UUID);
             }
 
             return map(cursor);
