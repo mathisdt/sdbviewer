@@ -9,6 +9,7 @@ static def buildTime() {
 }
 
 android {
+    // the same SDK has to be configured in .travis.yml:
     compileSdkVersion 28
 
     compileOptions {
