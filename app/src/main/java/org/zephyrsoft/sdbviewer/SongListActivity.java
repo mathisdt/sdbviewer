@@ -47,6 +47,8 @@ public class SongListActivity extends AppCompatActivity {
 
     private SDBFetcher fetcher;
 
+    private String filter;
+
     @Override
     protected void onPause() {
         saveFirstVisiblePosition();
@@ -101,7 +103,10 @@ public class SongListActivity extends AppCompatActivity {
 
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setIconifiedByDefault(true);
-        searchView.setOnCloseListener(() -> handleSearchText(null));
+        searchView.setOnCloseListener(() -> {
+            ((SDBViewerApplication) getApplication()).setFirstVisiblePosition(0);
+            return handleSearchText(null);
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -117,11 +122,15 @@ public class SongListActivity extends AppCompatActivity {
     }
 
     private boolean handleSearchText(String searchText) {
-        String filter = searchText == null ? null : searchText.toLowerCase().replaceAll("[\\p{Space}\\p{Punct}]++", " ");
+        filter = searchText == null ? null : searchText.toLowerCase().replaceAll("[\\p{Space}\\p{Punct}]++", " ");
         Log.i(Constants.LOG_TAG, "search text entered: " + searchText + " / filter text used: " + filter);
+        applyFilter();
+        return filter != null;
+    }
+
+    private void applyFilter() {
         RecyclerView recyclerView = findViewById(R.id.song_list);
         ((SimpleItemRecyclerViewAdapter)recyclerView.getAdapter()).filter(filter);
-        return true;
     }
 
     @Override
@@ -168,6 +177,7 @@ public class SongListActivity extends AppCompatActivity {
                     Toast.makeText(this, "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
                 } else {
                     recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, fetcher, result.getSongs(), mTwoPane));
+                    applyFilter();
 
                     int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
                     recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
