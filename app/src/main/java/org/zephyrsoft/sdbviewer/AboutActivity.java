@@ -14,7 +14,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private String getVersionName() {
         try {
-            return getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(Constants.LOG_TAG, "could not get version name from manifest: " + e.getMessage(), e);
             return "?";
@@ -32,7 +32,7 @@ public class AboutActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_about);
 
-        ((TextView) findViewById(R.id.versionTextView)).setText("SDB Viewer " + getVersionName());
+        ((TextView) findViewById(R.id.versionTextView)).setText(getString(R.string.app_name_with_version, getVersionName()));
     }
 
     @Override

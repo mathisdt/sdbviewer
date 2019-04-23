@@ -101,7 +101,7 @@ public class SongListActivity extends AppCompatActivity {
 
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setIconifiedByDefault(true);
-        searchView.setOnCloseListener(() -> handleSearchText(""));
+        searchView.setOnCloseListener(() -> handleSearchText(null));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -111,10 +111,6 @@ public class SongListActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 return handleSearchText(newText);
             }
-        });
-        searchView.setOnCloseListener(() -> {
-            handleSearchText(null);
-            return true;
         });
 
         return true;
@@ -133,20 +129,18 @@ public class SongListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 saveFirstVisiblePosition();
-                fetcher.invalidateSavedSongs(getApplicationContext());
+                fetcher.invalidateSavedSongs(this);
                 loadAndShow(findViewById(R.id.song_list), null);
                 return true;
 
             case R.id.action_settings:
-                Context contextSettings = getApplicationContext();
-                Intent intentSettings = new Intent(contextSettings, SettingsActivity.class);
-                contextSettings.startActivity(intentSettings);
+                Intent intentSettings = new Intent(this, SettingsActivity.class);
+                startActivity(intentSettings);
                 return true;
 
             case R.id.action_about:
-                Context contextAbout = getApplicationContext();
-                Intent intentAbout = new Intent(contextAbout, AboutActivity.class);
-                contextAbout.startActivity(intentAbout);
+                Intent intentAbout = new Intent(this, AboutActivity.class);
+                startActivity(intentAbout);
                 return true;
 
             default:
@@ -159,8 +153,8 @@ public class SongListActivity extends AppCompatActivity {
 
     private String getUrl() {
         SharedPreferences sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return sharedPreferences.getString(getApplicationContext().getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
+            PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString(getString(R.string.pref_songs_url), getString(R.string.pref_songs_url_default));
     }
 
     private void loadAndShow(final @NonNull RecyclerView recyclerView, String filter) {
@@ -171,7 +165,7 @@ public class SongListActivity extends AppCompatActivity {
             try {
                 if (result.hasException()) {
                     Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
-                    Toast.makeText(getApplicationContext(), "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
                 } else {
                     recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, fetcher, result.getSongs(), mTwoPane));
 
@@ -186,7 +180,7 @@ public class SongListActivity extends AppCompatActivity {
         Runnable onAbort = () -> findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
 
         try {
-            new FetchSongsTask(onDone, onAbort, urlToUse, filter).execute();
+            new FetchSongsTask(onDone, onAbort, urlToUse, filter, recyclerView.getContext()).execute();
         } catch (Exception e) {
             onDone.accept(new FetchSongsResult(e));
         }
@@ -198,31 +192,33 @@ public class SongListActivity extends AppCompatActivity {
         private Runnable onAbort;
         private String url;
         private String filter;
+        private Context context;
 
-        FetchSongsTask(Consumer<FetchSongsResult> onDone, Runnable onAbort, String url, String filter) {
+        FetchSongsTask(Consumer<FetchSongsResult> onDone, Runnable onAbort, String url, String filter, Context context) {
             this.onDone = onDone;
             this.onAbort = onAbort;
             this.url = url;
             this.filter = filter;
+            this.context = context;
         }
 
         protected FetchSongsResult doInBackground(Void... nothing) {
             try {
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
                     try {
-                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "http://" + url, filter);
+                        List<Song> songs = fetcher.fetchSongs(context, "http://" + url, filter);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
                         Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with http: " + ex.getMessage(), ex);
                     }
                     try {
-                        List<Song> songs = fetcher.fetchSongs(getApplicationContext(), "https://" + url, filter);
+                        List<Song> songs = fetcher.fetchSongs(context, "https://" + url, filter);
                         return new FetchSongsResult(songs);
                     } catch (Exception ex) {
                         Log.w(Constants.LOG_TAG, "unsuccessfully tried URL \"" + url + "\" with https: " + ex.getMessage(), ex);
                     }
                 }
-                List<Song> songs = fetcher.fetchSongs(getApplicationContext(), url, filter);
+                List<Song> songs = fetcher.fetchSongs(context, url, filter);
                 return new FetchSongsResult(songs);
             } catch (Exception e) {
                 return(new FetchSongsResult(e));
