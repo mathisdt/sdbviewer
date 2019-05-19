@@ -5,7 +5,8 @@
         <additionalCopyrightNotes></additionalCopyrightNotes>
         <authorText>Mathis Dirksen-Thedens</authorText>
         <authorTranslation>Mathis Dirksen-Thedens</authorTranslation>
-        <chordSequence></chordSequence>
+        <chordSequence>C F C F G C
+C F C F G D C</chordSequence>
         <composer>Mathis Dirksen-Thedens</composer>
         <language>english</language>
         <lyrics>  C        F           C
@@ -24,7 +25,7 @@ But see the other test song
          F
 I'm sure it will be
 [ich bin sicher, es wird]
-           G     C
+           G  D  C
 much much better
 [viel, viel besser sein]</lyrics>
         <publisher></publisher>
