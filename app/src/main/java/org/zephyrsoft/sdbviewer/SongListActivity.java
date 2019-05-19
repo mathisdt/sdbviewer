@@ -130,7 +130,9 @@ public class SongListActivity extends AppCompatActivity {
 
     private void applyFilter() {
         RecyclerView recyclerView = findViewById(R.id.song_list);
-        ((SimpleItemRecyclerViewAdapter)recyclerView.getAdapter()).filter(filter);
+        if (recyclerView.getAdapter() != null) {
+            ((SimpleItemRecyclerViewAdapter) recyclerView.getAdapter()).filter(filter);
+        }
     }
 
     @Override
