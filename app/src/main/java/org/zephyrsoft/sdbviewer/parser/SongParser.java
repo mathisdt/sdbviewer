@@ -137,8 +137,6 @@ public class SongParser {
 	 * Indicates specific elements of a {@link Song}.
 	 */
 	public enum SongElementEnum {
-		/** the title (if present, it is always exactly one line) */
-		TITLE,
 		/** a lyrics element (not always a whole line, see NEW_LINE) */
 		LYRICS,
 		/** a chord element (not always a whole line, see NEW_LINE) */
