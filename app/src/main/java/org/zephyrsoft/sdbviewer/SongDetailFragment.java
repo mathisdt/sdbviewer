@@ -49,7 +49,14 @@ public class SongDetailFragment extends Fragment {
 
         if (getArguments() != null && getArguments().containsKey(Constants.ARG_SONG)) {
             song = getArguments().getParcelable(Constants.ARG_SONG);
+        }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (song != null) {
             Activity activity = this.getActivity();
             if (activity == null) {
                 throw new IllegalStateException("activity not found");
