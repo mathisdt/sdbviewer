@@ -32,21 +32,23 @@ public class SongParser {
 			for (String line : song.getLyrics().split(NEWLINE_REGEX)) {
 				Matcher translationMatcher = TRANSLATION_PATTERN.matcher(line);
 				if (translationMatcher.matches()) {
-				    if (includeTranslation) {
-                        isFirst = addNewlineIfNotFirstLine(ret, isFirst);
-                        String prefix = translationMatcher.group(1);
-                        String translation = translationMatcher.group(2);
-                        String suffix = translationMatcher.group(3);
-                        if (notEmpty(prefix)) {
-                            ret.add(new SongElement(SongElementEnum.LYRICS, prefix));
-                        }
-                        if (notEmpty(translation)) {
-                            ret.add(new SongElement(SongElementEnum.TRANSLATION, translation));
-                        }
-                        if (notEmpty(suffix)) {
-                            ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
-                        }
-                    }
+					String prefix = translationMatcher.group(1);
+					String translation = translationMatcher.group(2);
+					String suffix = translationMatcher.group(3);
+					if (notEmpty(prefix)
+						|| (includeTranslation && notEmpty(translation))
+						|| notEmpty(suffix)) {
+						isFirst = addNewlineIfNotFirstLine(ret, isFirst);
+					}
+					if (notEmpty(prefix)) {
+						ret.add(new SongElement(SongElementEnum.LYRICS, prefix));
+					}
+					if (includeTranslation && notEmpty(translation)) {
+						ret.add(new SongElement(SongElementEnum.TRANSLATION, translation));
+					}
+					if (notEmpty(suffix)) {
+						ret.add(new SongElement(SongElementEnum.LYRICS, suffix));
+					}
 				} else if (isChordsLine(line)) {
 				    if (includeChords) {
                         isFirst = addNewlineIfNotFirstLine(ret, isFirst);
