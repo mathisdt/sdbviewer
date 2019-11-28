@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -178,12 +181,25 @@ public class SongListActivity extends AppCompatActivity {
                     Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
                     Toast.makeText(this, "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
                 } else {
-                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, fetcher, result.getSongs(), mTwoPane));
+                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, recyclerView, fetcher, result.getSongs(), mTwoPane));
                     applyFilter();
 
                     int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
                     recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
                     Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
+
+                    // select first element by default if in two-pane mode
+                    if (mTwoPane) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                RecyclerView.ViewHolder firstElement = recyclerView.findViewHolderForAdapterPosition(firstVisiblePosition);
+                                if (firstElement != null) {
+                                    firstElement.itemView.performClick();
+                                }
+                            }
+                        }, 1);
+                    }
                 }
             } finally {
                 findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
@@ -276,38 +292,20 @@ public class SongListActivity extends AppCompatActivity {
         extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final SongListActivity mParentActivity;
+        private final RecyclerView recyclerView;
         private final SDBFetcher fetcher;
         private List<Song> mValuesFiltered;
         private final boolean mTwoPane;
-        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Song item = (Song) view.getTag();
-
-                if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putParcelable(Constants.ARG_SONG, item);
-                    SongDetailFragment fragment = new SongDetailFragment();
-                    fragment.setArguments(arguments);
-                    mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.song_detail_container, fragment)
-                        .commit();
-                } else {
-                    Context context = view.getContext();
-                    Intent intent = new Intent(context, SongDetailActivity.class);
-                    intent.putExtra(Constants.ARG_SONG, (Parcelable) item);
-
-                    context.startActivity(intent);
-                }
-            }
-        };
+        private int selectedIndex = -1;
 
         SimpleItemRecyclerViewAdapter(SongListActivity parent,
+                                      final @NonNull RecyclerView recyclerView,
                                       SDBFetcher fetcher,
                                       List<Song> items,
                                       boolean twoPane) {
             mValuesFiltered = items;
             mParentActivity = parent;
+            this.recyclerView = recyclerView;
             this.fetcher = fetcher;
             mTwoPane = twoPane;
         }
@@ -332,7 +330,32 @@ public class SongListActivity extends AppCompatActivity {
             holder.mContentView.setText(SongParser.getFirstLyricsLine(song));
 
             holder.itemView.setTag(song);
-            holder.itemView.setOnClickListener(mOnClickListener);
+            holder.itemView.setOnClickListener(view -> {
+                Song item = (Song) view.getTag();
+
+                if (mTwoPane) {
+                    Bundle arguments = new Bundle();
+                    arguments.putParcelable(Constants.ARG_SONG, item);
+                    SongDetailFragment fragment = new SongDetailFragment();
+                    fragment.setArguments(arguments);
+                    mParentActivity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.song_detail_container, fragment)
+                        .commit();
+
+                    selectedIndex = position;
+                    view.setSelected(true);
+                    notifyDataSetChanged();
+                } else {
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, SongDetailActivity.class);
+                    intent.putExtra(Constants.ARG_SONG, (Parcelable) item);
+
+                    context.startActivity(intent);
+                }
+            });
+
+            // manage selection state on view recycling
+            holder.itemView.setSelected(position == selectedIndex);
         }
 
         @Override
@@ -348,6 +371,10 @@ public class SongListActivity extends AppCompatActivity {
                 super(view);
                 mIdView = view.findViewById(R.id.id_text);
                 mContentView = view.findViewById(R.id.content);
+            }
+
+            public int getItemPosition() {
+                return getAdapterPosition();
             }
         }
     }

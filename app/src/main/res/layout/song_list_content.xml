@@ -4,14 +4,15 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
-              tools:layout_width="match_parent">
+              tools:layout_width="match_parent"
+              android:background="@drawable/row_selector">
 
     <TextView
         android:id="@+id/id_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginTop="@dimen/text_margin"
+        android:layout_marginTop="@dimen/half_text_margin"
         android:layout_marginRight="@dimen/text_margin"
         android:ellipsize="end"
         android:singleLine="true"
@@ -27,6 +28,7 @@
         android:layout_marginLeft="@dimen/text_margin_large"
         android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginRight="@dimen/text_margin"
+        android:layout_marginBottom="@dimen/half_text_margin"
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="?attr/textAppearanceListItem"
