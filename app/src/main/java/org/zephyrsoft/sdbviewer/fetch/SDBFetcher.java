@@ -76,7 +76,12 @@ public class SDBFetcher {
             Log.w(Constants.LOG_TAG, "could not use saved songs data: " + e.getMessage(), e);
         }
 
-        return fetchSongsFromNetwork(context, url);
+        try {
+            return fetchSongsFromNetwork(context, url);
+        } catch(Exception e) {
+            List<Song> retainedSongs = databaseAccess.selectFiltered(filter);
+            throw new FetchException("could not load songs from network", e, retainedSongs);
+        }
     }
 
     private List<Song> fetchSongsFromNetwork(Context context, String url) {

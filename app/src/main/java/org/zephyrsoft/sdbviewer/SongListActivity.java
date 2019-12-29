@@ -26,6 +26,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.zephyrsoft.sdbviewer.fetch.FetchException;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
 import org.zephyrsoft.sdbviewer.model.Song;
 import org.zephyrsoft.sdbviewer.parser.SongParser;
@@ -177,29 +178,15 @@ public class SongListActivity extends AppCompatActivity {
         final String urlToUse = getUrl();
         Consumer<FetchSongsResult> onDone = result -> {
             try {
-                if (result.hasException()) {
+                if (result.hasExceptionAndNoSongs()) {
                     Log.w(Constants.LOG_TAG, "could not load songs: " + result.getException().getMessage(), result.getException());
-                    Toast.makeText(this, "Could not load songs. Is the URL \"" + urlToUse + "\" correct? If not, please go to Settings and edit it.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Could not load songs. Is the URL \"" + urlToUse + "\" correct?", Toast.LENGTH_LONG).show();
+                } else if (result.hasExceptionButSongs()) {
+                    Log.w(Constants.LOG_TAG, "could not load songs (but using old data): " + result.getException().getMessage(), result.getException());
+                    Toast.makeText(this, "Could not load songs - using old data for now. Is the URL \"" + urlToUse + "\" correct?", Toast.LENGTH_LONG).show();
+                    showSongs(recyclerView, result.getSongs());
                 } else {
-                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, recyclerView, fetcher, result.getSongs(), mTwoPane));
-                    applyFilter();
-
-                    int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
-                    recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
-                    Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
-
-                    // select first element by default if in two-pane mode
-                    if (mTwoPane) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                RecyclerView.ViewHolder firstElement = recyclerView.findViewHolderForAdapterPosition(firstVisiblePosition);
-                                if (firstElement != null) {
-                                    firstElement.itemView.performClick();
-                                }
-                            }
-                        }, 1);
-                    }
+                    showSongs(recyclerView, result.getSongs());
                 }
             } finally {
                 findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
@@ -211,6 +198,28 @@ public class SongListActivity extends AppCompatActivity {
             new FetchSongsTask(onDone, onAbort, urlToUse, filter, recyclerView.getContext()).execute();
         } catch (Exception e) {
             onDone.accept(new FetchSongsResult(e));
+        }
+    }
+
+    private void showSongs(@NonNull RecyclerView recyclerView, List<Song> songs) {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongListActivity.this, recyclerView, fetcher, songs, mTwoPane));
+        applyFilter();
+
+        int firstVisiblePosition = ((SDBViewerApplication) getApplication()).getFirstVisiblePosition();
+        recyclerView.getLayoutManager().scrollToPosition(firstVisiblePosition);
+        Log.d(Constants.LOG_TAG, "restored first visible position " + firstVisiblePosition);
+
+        // select first element by default if in two-pane mode
+        if (mTwoPane) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    RecyclerView.ViewHolder firstElement = recyclerView.findViewHolderForAdapterPosition(firstVisiblePosition);
+                    if (firstElement != null) {
+                        firstElement.itemView.performClick();
+                    }
+                }
+            }, 1);
         }
     }
 
@@ -248,8 +257,10 @@ public class SongListActivity extends AppCompatActivity {
                 }
                 List<Song> songs = fetcher.fetchSongs(context, url, filter);
                 return new FetchSongsResult(songs);
+            } catch (FetchException e) {
+                return new FetchSongsResult(e.getRetainedSongs(), e);
             } catch (Exception e) {
-                return(new FetchSongsResult(e));
+                return new FetchSongsResult(e);
             }
         }
 
@@ -271,12 +282,21 @@ public class SongListActivity extends AppCompatActivity {
             this.songs = songs;
         }
 
+        public FetchSongsResult(List<Song> songs, Exception exception) {
+            this.songs = songs;
+            this.exception = exception;
+        }
+
         FetchSongsResult(Exception exception) {
             this.exception = exception;
         }
 
-        boolean hasException() {
-            return exception != null;
+        boolean hasExceptionAndNoSongs() {
+            return exception != null && (songs == null || songs.isEmpty());
+        }
+
+        boolean hasExceptionButSongs() {
+            return exception != null && songs != null && !songs.isEmpty();
         }
 
         List<Song> getSongs() {
@@ -311,7 +331,13 @@ public class SongListActivity extends AppCompatActivity {
         }
 
         void filter(String filterText) {
-            mValuesFiltered = fetcher.fetchSongs(mParentActivity, getUrl(), filterText);
+            try {
+                mValuesFiltered = fetcher.fetchSongs(mParentActivity, getUrl(), filterText);
+            } catch (FetchException e) {
+                if (e.hasRetainedSongs()) {
+                    mValuesFiltered = e.getRetainedSongs();
+                }
+            }
             notifyDataSetChanged();
         }
 
