@@ -59,14 +59,15 @@ dependencies {
     testImplementation 'org.ogce:xpp3:1.1.6'
 
     testImplementation 'junit:junit:4.13'
-    testImplementation 'org.mockito:mockito-core:3.3.3'
+    def mockitoVersion = "3.3.3"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     def powermockVersion = "2.0.7"
     testImplementation "org.powermock:powermock-module-junit4-rule:$powermockVersion"
     testImplementation "org.powermock:powermock-core:$powermockVersion"
     testImplementation "org.powermock:powermock-module-junit4:$powermockVersion"
     testImplementation "org.powermock:powermock-api-mockito2:$powermockVersion"
 
-    androidTestImplementation 'org.mockito:mockito-android:2.23.4'
+    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
