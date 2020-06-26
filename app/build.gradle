@@ -50,7 +50,7 @@ dependencies {
     implementation('com.stanfy:gson-xml-java:0.1.7') {
         exclude group: 'xmlpull', module: 'xmlpull'
     }
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.20'
+    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
 
     // only necessary for testing, the app will use Android's implementation:
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
