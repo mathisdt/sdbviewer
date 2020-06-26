@@ -4,5 +4,7 @@ updates:
     directory: "/app"
     schedule:
       interval: "monthly"
+    ignore:
+      - dependency-name: "com.simplecityapps:recyclerview-fastscroll"
     allow:
       - dependency-type: "direct"
