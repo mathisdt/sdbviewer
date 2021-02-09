@@ -7,13 +7,16 @@ on:
 
 jobs:
   release:
-    if: github.event.base_ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     name: Release
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: Set up JDK
+      - name: Current branch name
+        run: |
+          echo "current branch: $GITHUB_REF"
+    - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
