@@ -16,7 +16,7 @@ jobs:
       - name: Current branch name
         run: |
           echo "current branch: $GITHUB_REF"
-    - name: Set up JDK
+      - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
