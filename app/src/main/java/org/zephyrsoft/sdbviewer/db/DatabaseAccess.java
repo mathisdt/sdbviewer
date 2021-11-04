@@ -11,8 +11,8 @@ import android.util.Log;
 import org.zephyrsoft.sdbviewer.Constants;
 import org.zephyrsoft.sdbviewer.model.Song;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DatabaseAccess {
@@ -134,7 +134,7 @@ public class DatabaseAccess {
         }
 
         private List<Song> map(Cursor cursor) {
-            List<Song> result = new LinkedList<>();
+            List<Song> result = new ArrayList<>();
             try {
                 if (cursor == null) {
                     return result;
