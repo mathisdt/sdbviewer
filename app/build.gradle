@@ -71,7 +71,7 @@ dependencies {
     testImplementation 'org.ogce:xpp3:1.1.6'
 
     testImplementation 'junit:junit:4.13.2'
-    def mockitoVersion = "3.12.4"
+    def mockitoVersion = "4.0.0"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     def powermockVersion = "2.0.9"
     testImplementation "org.powermock:powermock-module-junit4-rule:$powermockVersion"
