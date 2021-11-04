@@ -59,7 +59,11 @@ dependencies {
 
     implementation('com.stanfy:gson-xml-java:0.1.7') {
         exclude group: 'xmlpull', module: 'xmlpull'
-        implementation('com.google.code.gson:gson:2.8.9')
+        constraints {
+            implementation('com.google.code.gson:gson:2.8.9'){
+                because("there are security problems in older versions")
+            }
+        }
     }
     //noinspection GradleDependency
     implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
