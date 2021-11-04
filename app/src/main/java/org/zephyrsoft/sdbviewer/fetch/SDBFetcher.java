@@ -35,10 +35,6 @@ import static org.zephyrsoft.sdbviewer.Constants.LOG_TAG;
 
 public class SDBFetcher {
 
-    static {
-        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
-    }
-
     private DatabaseAccess databaseAccess;
 
     public SDBFetcher(DatabaseAccess databaseAccess) {
