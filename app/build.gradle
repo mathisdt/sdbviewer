@@ -9,22 +9,33 @@ static def buildTime() {
 }
 
 android {
-    // the same SDK has to be configured in .travis.yml:
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     defaultConfig {
         applicationId "org.zephyrsoft.sdbviewer"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 29
+
         versionCode 7
         versionName "1.6"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        release {
+            postprocessing {
+                removeUnusedCode false
+                obfuscate false
+                optimizeCode false
+            }
+        }
     }
 
     // rename final APK files
@@ -36,25 +47,26 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:support-compat:28.0.0'
-    implementation 'com.android.support:support-vector-drawable:28.0.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+    implementation "androidx.fragment:fragment:1.3.6"
+    implementation 'com.google.android.material:material:1.4.0'
 
-    def acraVersion = '5.2.1'
+    def acraVersion = '5.8.4'
     implementation "ch.acra:acra-http:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
 
     implementation 'com.madgag.spongycastle:prov:1.58.0.0'
     implementation('com.stanfy:gson-xml-java:0.1.7') {
         exclude group: 'xmlpull', module: 'xmlpull'
+        implementation('com.google.code.gson:gson:2.8.9')
     }
     //noinspection GradleDependency
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.20'
+    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 
     // only necessary for testing, the app will use Android's implementation:
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'xmlpull:xmlpull:1.1.3.1'
     testImplementation 'org.ogce:xpp3:1.1.6'
 
@@ -68,6 +80,4 @@ dependencies {
     testImplementation "org.powermock:powermock-api-mockito2:$powermockVersion"
 
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              tools:layout_width="match_parent"
-              android:background="@drawable/row_selector">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/row_selector"
+    android:orientation="vertical"
+    tools:layout_width="match_parent">
 
     <TextView
         android:id="@+id/id_text"
@@ -18,16 +18,14 @@
         android:singleLine="true"
         android:textAppearance="?attr/textAppearanceListItemSmall"
         android:textStyle="bold"
-        tools:layout_width="match_parent"/>
+        tools:layout_width="match_parent" />
 
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/text_margin_large"
-        android:layout_marginLeft="@dimen/text_margin_large"
         android:layout_marginEnd="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin"
         android:layout_marginBottom="@dimen/half_text_margin"
         android:ellipsize="end"
         android:singleLine="true"
@@ -35,5 +33,5 @@
         android:textStyle="italic"
         tools:layout_marginLeft="@dimen/text_margin_large"
         tools:layout_width="match_parent"
-        tools:paddingLeft="@dimen/fab_margin"/>
+        tools:paddingLeft="@dimen/fab_margin" />
 </LinearLayout>
