@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="org.zephyrsoft.sdbviewer">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.zephyrsoft.sdbviewer">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".SDBViewerApplication"
@@ -16,37 +16,41 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".SongListActivity"
-            android:label="@string/app_name"
+            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SongDetailActivity"
+            android:exported="false"
             android:label="@string/title_song_detail"
             android:parentActivityName=".SongListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.zephyrsoft.sdbviewer.SongListActivity"/>
+                android:value="org.zephyrsoft.sdbviewer.SongListActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".SongListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.zephyrsoft.sdbviewer.SongListActivity"/>
+                android:value="org.zephyrsoft.sdbviewer.SongListActivity" />
         </activity>
-        <activity android:name=".AboutActivity"
-                  android:label="@string/about"
-                  android:parentActivityName=".SongListActivity">
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:label="@string/about"
+            android:parentActivityName=".SongListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.zephyrsoft.sdbviewer.SongListActivity"/>
+                android:value="org.zephyrsoft.sdbviewer.SongListActivity" />
         </activity>
     </application>
 
