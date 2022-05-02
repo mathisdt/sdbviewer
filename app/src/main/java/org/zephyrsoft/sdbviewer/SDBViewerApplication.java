@@ -3,9 +3,9 @@ package org.zephyrsoft.sdbviewer;
 import android.app.Application;
 
 import org.acra.ACRA;
-import org.acra.annotation.AcraCore;
-import org.acra.annotation.AcraDialog;
-import org.acra.annotation.AcraHttpSender;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.DialogConfigurationBuilder;
+import org.acra.config.HttpSenderConfigurationBuilder;
 import org.acra.data.StringFormat;
 import org.acra.sender.HttpSender;
 import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
@@ -27,15 +27,6 @@ import static org.acra.ReportField.STACK_TRACE;
 import static org.acra.ReportField.USER_APP_START_DATE;
 import static org.acra.ReportField.USER_CRASH_DATE;
 
-@AcraCore(reportFormat = StringFormat.JSON, reportContent = {
-    ANDROID_VERSION, APP_VERSION_CODE, APP_VERSION_NAME, BRAND,
-    CRASH_CONFIGURATION, INSTALLATION_ID, LOGCAT, PACKAGE_NAME, PHONE_MODEL, PRODUCT,
-    REPORT_ID, SHARED_PREFERENCES, STACK_TRACE, USER_APP_START_DATE, USER_CRASH_DATE})
-@AcraHttpSender(httpMethod = HttpSender.Method.POST,
-    uri = "https://crashreport.zephyrsoft.org/")
-@AcraDialog(resTitle = R.string.acra_title,
-    resText = R.string.acra_text,
-    resCommentPrompt = R.string.acra_comment_prompt)
 public class SDBViewerApplication extends Application {
 
     /**
@@ -49,6 +40,24 @@ public class SDBViewerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder()
+            .withBuildConfigClass(BuildConfig.class)
+            .withReportFormat(StringFormat.JSON)
+            .withReportContent(ANDROID_VERSION, APP_VERSION_CODE, APP_VERSION_NAME, BRAND,
+                CRASH_CONFIGURATION, INSTALLATION_ID, LOGCAT, PACKAGE_NAME, PHONE_MODEL, PRODUCT,
+                REPORT_ID, SHARED_PREFERENCES, STACK_TRACE, USER_APP_START_DATE, USER_CRASH_DATE)
+            .withPluginConfigurations(new DialogConfigurationBuilder()
+                    .withTitle(getString(R.string.acra_title))
+                    .withText(getString(R.string.acra_text))
+                    .withCommentPrompt(getString(R.string.acra_comment_prompt))
+                    .withEnabled(true)
+                    .build(),
+                new HttpSenderConfigurationBuilder()
+                    .withHttpMethod(HttpSender.Method.POST)
+                    .withUri("https://crashreport.zephyrsoft.org/")
+                    .withEnabled(true)
+                    .build());
 
         ACRA.init(this);
 
