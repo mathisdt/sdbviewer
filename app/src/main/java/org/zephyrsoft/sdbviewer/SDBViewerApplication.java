@@ -59,7 +59,7 @@ public class SDBViewerApplication extends Application {
                     .withEnabled(true)
                     .build());
 
-        ACRA.init(this);
+        ACRA.init(this, builder);
 
         // create services and connect them:
         DatabaseAccess databaseAccess = new DatabaseAccess(this);
