@@ -19,5 +19,5 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_songs_reload_interval_desc"/>
-
+    <!-- don't forget to add new preferences to Constants.AppPreference -->
 </PreferenceScreen>

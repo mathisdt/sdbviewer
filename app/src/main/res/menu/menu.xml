@@ -22,6 +22,13 @@
         android:visible="true"/>
 
     <item
+        android:id="@+id/action_import_settings"
+        app:showAsAction="never"
+        android:enabled="true"
+        android:title="@string/menu_import_settings"
+        android:visible="true"/>
+
+    <item
         android:id="@+id/action_about"
         app:showAsAction="never"
         android:enabled="true"

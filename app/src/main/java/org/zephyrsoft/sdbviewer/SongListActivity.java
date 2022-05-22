@@ -1,21 +1,16 @@
 package org.zephyrsoft.sdbviewer;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +20,15 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.zephyrsoft.sdbviewer.fetch.FetchException;
 import org.zephyrsoft.sdbviewer.fetch.SDBFetcher;
@@ -116,6 +120,7 @@ public class SongListActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 return handleSearchText(query);
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 return handleSearchText(newText);
@@ -153,6 +158,16 @@ public class SongListActivity extends AppCompatActivity {
                 startActivity(intentSettings);
                 return true;
 
+            case R.id.action_import_settings:
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                    Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
+                    startActivity(intentImportSettings);
+                } else {
+                    qrCodeScannerLauncher.launch(Manifest.permission.CAMERA);
+                }
+                return true;
+
             case R.id.action_about:
                 Intent intentAbout = new Intent(this, AboutActivity.class);
                 startActivity(intentAbout);
@@ -165,6 +180,17 @@ public class SongListActivity extends AppCompatActivity {
 
         }
     }
+
+    private ActivityResultLauncher<String> qrCodeScannerLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
+                startActivity(intentImportSettings);
+            } else {
+                // TODO explain to the user that the QR scanner is unavailable because the user denied the permission
+            }
+        });
+
 
     private String getUrl() {
         SharedPreferences sharedPreferences =

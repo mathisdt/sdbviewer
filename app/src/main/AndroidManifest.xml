@@ -4,6 +4,11 @@
     package="org.zephyrsoft.sdbviewer">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".SDBViewerApplication"
@@ -38,6 +43,15 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
+            android:parentActivityName=".SongListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.zephyrsoft.sdbviewer.SongListActivity" />
+        </activity>
+        <activity
+            android:name=".QRScannerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_import_settings"
             android:parentActivityName=".SongListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

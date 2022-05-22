@@ -9,5 +9,5 @@
         android:defaultValue="true"
         android:key="@string/pref_show_chords"
         android:title="@string/pref_show_chords_desc"/>
-
+    <!-- don't forget to add new preferences to Constants.AppPreference -->
 </PreferenceScreen>
