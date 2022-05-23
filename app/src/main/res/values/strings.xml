@@ -39,4 +39,8 @@
     <string name="versionDescription">Version:</string>
     <string name="search">Search</string>
     <string name="menu_import_settings">Import settings from QR code</string>
+    <string name="camera_explanation">Please allow this app to access the camera in order to scan the QR code.</string>
+    <string name="camera_rejected">You rejected the camera permission, so the QR code cannot be scanned.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

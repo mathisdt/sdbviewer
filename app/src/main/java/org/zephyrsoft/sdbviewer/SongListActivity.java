@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -163,6 +165,15 @@ public class SongListActivity extends AppCompatActivity {
                     PackageManager.PERMISSION_GRANTED) {
                     Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
                     startActivity(intentImportSettings);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    AlertDialog.Builder dialog  = new AlertDialog.Builder(this);
+                    dialog.setMessage(R.string.camera_explanation);
+                    dialog.setPositiveButton(R.string.ok,
+                        (d, b) -> qrCodeScannerLauncher.launch(Manifest.permission.CAMERA));
+                    dialog.setNegativeButton(R.string.cancel, null);
+                    dialog.setCancelable(true);
+                    dialog.create().show();
                 } else {
                     qrCodeScannerLauncher.launch(Manifest.permission.CAMERA);
                 }
@@ -187,7 +198,11 @@ public class SongListActivity extends AppCompatActivity {
                 Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
                 startActivity(intentImportSettings);
             } else {
-                // TODO explain to the user that the QR scanner is unavailable because the user denied the permission
+                AlertDialog.Builder dialog  = new AlertDialog.Builder(this);
+                dialog.setMessage(R.string.camera_rejected);
+                dialog.setPositiveButton(R.string.ok, null);
+                dialog.setCancelable(true);
+                dialog.create().show();
             }
         });
 
