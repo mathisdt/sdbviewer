@@ -1,28 +1,22 @@
 package org.zephyrsoft.sdbviewer.fetch;
 
-import android.util.Log;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
-import org.zephyrsoft.sdbviewer.model.Song;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
-@PowerMockIgnore({"org.spongycastle.*", "org.xmlpull.v1.*"})
-@PrepareForTest({Log.class})
-@RunWith(PowerMockRunner.class)
+import android.util.Log;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.zephyrsoft.sdbviewer.db.DatabaseAccess;
+import org.zephyrsoft.sdbviewer.model.Song;
+
+import java.util.List;
+
 public class SDBFetcherTest {
 
     private static final String EXAMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -36,12 +30,15 @@ public class SDBFetcherTest {
 
     private SDBFetcher fetcher;
 
+    @BeforeClass
+    public static void setupAll() {
+        MockedStatic<Log> log = Mockito.mockStatic(Log.class);
+        log.when(() -> Log.e(anyString(), anyString())).thenReturn(1);
+    }
+
     @Before
     public void setup() {
-        PowerMockito.mockStatic(Log.class);
-        Mockito.when(Log.e(anyString(), anyString())).thenReturn(1);
         DatabaseAccess databaseAccess = Mockito.mock(DatabaseAccess.class);
-
         fetcher = new SDBFetcher(databaseAccess);
     }
 
