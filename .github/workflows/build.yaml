@@ -48,7 +48,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ env.release_number }}
+          name: ${{ env.release_number }}
           body: "see changelog: https://zephyrsoft.org/sdbviewer/history"
           tag_name: ${{ env.release_number }}
           files: ${{ env.release_apk }}
