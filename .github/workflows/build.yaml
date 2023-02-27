@@ -13,15 +13,15 @@ jobs:
     name: Build
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
           check-latest: true
       - name: Set up Gradle cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -33,11 +33,6 @@ jobs:
         run: ./gradlew test
       - name: Assemble
         run: ./gradlew assemble
-      - name: Upload APKs
-        uses: actions/upload-artifact@v2
-        with:
-          name: packages
-          path: app/build/outputs/apk/**/*.apk
       - name: Cleanup Gradle cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
@@ -48,25 +43,13 @@ jobs:
         run: |
           echo "release_number=$(git tag --points-at HEAD)"  >> $GITHUB_ENV
           echo "release_apk=$(ls app/build/outputs/apk/release/*.apk)" >> $GITHUB_ENV
-          echo "release_apk_short=$(ls app/build/outputs/apk/release/*.apk | sed -e 's#^.*/##g')" >> $GITHUB_ENV
       - name: Create release
         if: startsWith(github.ref, 'refs/tags/v')
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.release_number }}
-          release_name: ${{ env.release_number }}
+          name: Release ${{ env.release_number }}
           body: "see changelog: https://zephyrsoft.org/sdbviewer/history"
-      - name: Upload release artifact
-        if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.release_apk }}
-          asset_name: ${{ env.release_apk_short }}
-          asset_content_type: application/vnd.android.package-archive
+          tag_name: ${{ env.release_number }}
+          files: ${{ env.release_apk }}
+          token: ${{ secrets.GITHUB_TOKEN }}
