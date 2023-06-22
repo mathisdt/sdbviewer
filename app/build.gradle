@@ -58,7 +58,7 @@ dependencies {
     implementation "androidx.fragment:fragment:1.5.3"
     implementation 'com.google.android.material:material:1.6.1'
 
-    def acraVersion = '5.9.7'
+    def acraVersion = '5.10.1'
     implementation "ch.acra:acra-http:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
 
