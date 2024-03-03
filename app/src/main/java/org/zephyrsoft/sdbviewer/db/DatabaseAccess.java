@@ -29,10 +29,12 @@ public class DatabaseAccess {
     private static final String COL_UUID = "UUID";
     private static final String COL_CHORD_SEQUENCE = "CHORD_SEQUENCE";
     private static final String COL_LYRICS = "LYRICS";
+    private static final String COL_IMAGE = "IMAGE";
+    private static final String COL_IMAGE_ROTATION = "IMAGE_ROTATION";
 
     private static final String DATABASE = "SDBVIEWER";
     private static final String TABLE = "SONGS";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private final DatabaseOpenHelper databaseOpenHelper;
 
@@ -58,7 +60,9 @@ public class DatabaseAccess {
                 COL_TONALITY + ", " +
                 COL_UUID + ", " +
                 COL_CHORD_SEQUENCE + ", " +
-                COL_LYRICS + ")";
+                COL_LYRICS + ", " +
+                COL_IMAGE + ", " +
+                COL_IMAGE_ROTATION + ")";
 
         DatabaseOpenHelper(Context context) {
             super(context, DATABASE, null, DATABASE_VERSION);
@@ -112,6 +116,8 @@ public class DatabaseAccess {
             values.put(COL_UUID, song.getUUID());
             values.put(COL_CHORD_SEQUENCE, song.getChordSequence());
             values.put(COL_LYRICS, song.getLyrics());
+            values.put(COL_IMAGE, song.getImage());
+            values.put(COL_IMAGE_ROTATION, song.getImageRotation());
 
             database.insert(TABLE, null, values);
         }
@@ -166,6 +172,8 @@ public class DatabaseAccess {
             song.setTonality(cursor.getString(cursor.getColumnIndex(COL_TONALITY)));
             song.setChordSequence(cursor.getString(cursor.getColumnIndex(COL_CHORD_SEQUENCE)));
             song.setLyrics(cursor.getString(cursor.getColumnIndex(COL_LYRICS)));
+            song.setImage(cursor.getString(cursor.getColumnIndex(COL_IMAGE)));
+            song.setImageRotation(cursor.getString(cursor.getColumnIndex(COL_IMAGE_ROTATION)));
 
             return song;
         }

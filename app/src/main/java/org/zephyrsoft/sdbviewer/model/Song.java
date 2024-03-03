@@ -21,6 +21,8 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
     private String uuid;
     private String chordSequence;
     private String lyrics;
+    private String image;
+    private String imageRotation;
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
         @Override
@@ -59,6 +61,8 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
         uuid = in.readString();
         chordSequence = in.readString();
         lyrics = in.readString();
+        image = in.readString();
+        imageRotation = in.readString();
     }
 
     @Override
@@ -75,6 +79,8 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
         dest.writeString(uuid);
         dest.writeString(chordSequence);
         dest.writeString(lyrics);
+        dest.writeString(image);
+        dest.writeString(imageRotation);
     }
 
     @Override
@@ -116,6 +122,14 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
 
     public String getLyrics() {
         return lyrics;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getImageRotation() {
+        return imageRotation;
     }
 
     public String getTonality() {
@@ -160,6 +174,14 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
 
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setImageRotation(String imageRotation) {
+        this.imageRotation = imageRotation;
     }
 
     public void setTonality(String tonality) {
@@ -227,6 +249,8 @@ public class Song implements Serializable, Comparable<Song>, Parcelable {
             && isEmpty(getSongNotes())
             && isEmpty(getLyrics())
             && isEmpty(getTonality())
-            && isEmpty(getChordSequence());
+            && isEmpty(getChordSequence())
+            && isEmpty(getImage())
+            && isEmpty(getImageRotation());
     }
 }

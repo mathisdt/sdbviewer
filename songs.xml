@@ -61,4 +61,10 @@ https://zephyrsoft.org/contact-about-me</lyrics>
         <title>How This App Is Used</title>
         <uuid>1e48767c-6cc8-48ea-917a-e894d93c149b</uuid>
     </song>
+    <song>
+        <title>Test Image</title>
+        <uuid>2c44c9ac-226a-4478-b2fe-0e8dde3062cf</uuid>
+        <image>/a/path/to/a/file.jpg</image>
+        <imageRotation>270</imageRotation>
+    </song>
 </songs>
