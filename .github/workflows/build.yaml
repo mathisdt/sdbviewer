@@ -1,15 +1,12 @@
-name: Build
+name: build
+run-name: build commit with earthly
 
 on:
   push:
     branches:
       - "**"
-    tags:
-      - "v*"
 
 jobs:
-  build:
-    uses: mathisdt/workflows/.github/workflows/android.yaml@master
-    with:
-      changelog-link: https://zephyrsoft.org/sdbviewer/history
+  release:
+    uses: mathisdt/workflows/.github/workflows/earthly.yaml@master
     secrets: inherit
