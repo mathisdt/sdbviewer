@@ -3,6 +3,7 @@ VERSION 0.8
 build:
     FROM eclipse-temurin:17-jdk
     WORKDIR /project
+    RUN apt-get update >/dev/null 2>&1 && apt-get -y install git >/dev/null 2>&1
     COPY .git .git
     COPY gradle gradle
     COPY metadata metadata
