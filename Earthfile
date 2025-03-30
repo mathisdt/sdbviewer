@@ -3,7 +3,6 @@ VERSION 0.8
 build:
     FROM eclipse-temurin:17-jdk
     WORKDIR /project
-    RUN apt-get update >/dev/null 2>&1 && apt-get -y install git >/dev/null 2>&1
     COPY .git .git
     COPY gradle gradle
     COPY metadata metadata
@@ -12,7 +11,6 @@ build:
     COPY gradle.properties ./
     COPY gradlew ./
     COPY settings.gradle ./
-    RUN git submodule update --init --recursive
     RUN TZ=Europe/Berlin ./gradlew clean test
     RUN TZ=Europe/Berlin ./gradlew assemble
     SAVE ARTIFACT app/build AS LOCAL build
@@ -40,4 +38,3 @@ build-and-release-on-github:
                else \
                  echo "not releasing, no eligible tag found"; \
                fi
-
