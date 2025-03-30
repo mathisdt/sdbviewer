@@ -21,6 +21,21 @@ Song Database, this probably isn't for you!
 
 If you find a bug or want a new feature, you are welcome to
 [file an issue](https://github.com/mathisdt/sdbviewer/issues) or even fix things yourself
-and create a pull request.
+and create a pull request (see below).
 Please don't try to communicate with me via reviews, that doesn't work in both directions.
 You can also [write me an email](https://zephyrsoft.org/contact-about-me) and I'll see what I can do.
+
+## Contributing
+
+I'm a big fan of open source and very much welcome contributions, may it be error reports,
+feature proposals or code.
+
+If you want to build the app yourself, you can do so using
+[Earthly](https://docs.earthly.dev/). This uses Docker, so be sure to have both Docker and
+Earthly ready before calling `earthly +build` which will create a container with everything
+needed for the build, create the app package(s) inside it and then copy the results to the
+directory build/outputs/apk for you.
+
+For real development, it is of course necessary to have everything installed locally, 
+in that case the Earthfile (which describes the build process) can be used as blueprint
+for the setup.
