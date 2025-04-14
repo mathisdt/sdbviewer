@@ -64,7 +64,7 @@ dependencies {
     implementation('com.stanfy:gson-xml-java:0.1.7') {
         exclude group: 'xmlpull', module: 'xmlpull'
         constraints {
-            implementation('com.google.code.gson:gson:2.12.1') {
+            implementation('com.google.code.gson:gson:2.13.0') {
                 because("there are security problems in older versions")
             }
         }
