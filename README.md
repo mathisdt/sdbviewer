@@ -15,9 +15,6 @@ Song Database, this probably isn't for you!
 [<img src="https://zephyrsoft.org/wp-content/uploads/get-it-on-google-play.png"
      alt="Get it on Google Play"
      height="54px">](https://play.google.com/store/apps/details?id=org.zephyrsoft.sdbviewer)
-[<img src="https://zephyrsoft.org/wp-content/uploads/get-it-on-amazon-appstore.png"
-     alt="Get it on Amazon Appstore"
-     height="54px">](https://www.amazon.com/gp/product/B0CG4VJC1P)
 
 If you find a bug or want a new feature, you are welcome to
 [file an issue](https://github.com/mathisdt/sdbviewer/issues) or even fix things yourself
