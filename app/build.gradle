@@ -11,19 +11,19 @@ static def buildTime() {
 android {
     compileOptions {
         // enable support for the new language APIs
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
 
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    namespace 'org.zephyrsoft.sdbviewer'
+    namespace = 'org.zephyrsoft.sdbviewer'
 
     defaultConfig {
         applicationId "org.zephyrsoft.sdbviewer"
         minSdkVersion 21
-        targetSdkVersion 34
-        compileSdk 34
+        targetSdk = 36
+        compileSdk = 36
 
         versionCode 11                // increment after every release (for the next development cycle)
         versionName "1.9-SNAPSHOT"    // change with every release
@@ -32,12 +32,17 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    buildFeatures {
+        // generate the BuildConfig class
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             postprocessing {
-                removeUnusedCode false
-                obfuscate false
-                optimizeCode false
+                removeUnusedCode = false
+                obfuscate = false
+                optimizeCode = false
             }
         }
     }
@@ -51,10 +56,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.2'
-    implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
-    implementation "androidx.fragment:fragment:1.8.1"
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.3.0"
+    implementation "androidx.fragment:fragment:1.8.9"
     implementation 'com.google.android.material:material:1.12.0'
 
     def acraVersion = '5.12.0'
@@ -70,11 +75,11 @@ dependencies {
         }
     }
     implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
     implementation 'com.github.yuriy-budiyev:code-scanner:2.3.0'
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 
     // only necessary for testing, the app will use Android's implementation:
     testImplementation 'xmlpull:xmlpull:1.1.3.1'
