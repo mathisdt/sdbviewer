@@ -26,7 +26,7 @@ android {
         compileSdk = 36
 
         versionCode 12                // increment after every release (for the next development cycle)
-        versionName "1.10-SNAPSHOT"   // change with every release
+        versionName "1.9"   // change with every release
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
