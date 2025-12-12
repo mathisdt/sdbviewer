@@ -53,10 +53,6 @@ steps:
       echo "done setting up Android SDK"
       TZ=Europe/Berlin ./gradlew clean test
       TZ=Europe/Berlin ./gradlew assemble
-      ls -la build
-      ls -la build/outputs
-      ls -la build/outputs/apk
-      ls -la build/outputs/apk/release
   - name: release on Codeberg
     when:
       - event: manual
@@ -65,6 +61,6 @@ steps:
     image: codeberg.org/mathisdt/releaseplugin:latest
     pull: true
     settings:
-      PATTERN_TO_RELEASE: 'build/outputs/apk/release/*.apk'
+      PATTERN_TO_RELEASE: 'app/build/outputs/apk/release/*.apk'
       TOKEN:
         from_secret: TOKEN_REPO_READWRITE
