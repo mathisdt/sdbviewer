@@ -53,6 +53,10 @@ steps:
       echo "done setting up Android SDK"
       TZ=Europe/Berlin ./gradlew clean test
       TZ=Europe/Berlin ./gradlew assemble
+      ls -la build
+      ls -la build/outputs
+      ls -la build/outputs/apk
+      ls -la build/outputs/apk/release
   - name: release on Codeberg
     when:
       - event: manual
