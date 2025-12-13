@@ -32,7 +32,7 @@ steps:
     commands: |
       echo "installing packages..."
       apt-get update >/dev/null 2>&1
-      apt-get -y install wget unzip >/dev/null 2>&1
+      apt-get -y install curl unzip wget >/dev/null 2>&1
       echo "done installing packages"
       echo "setting up Android SDK..."
       export ANDROID_SDK_ROOT="/sdk"
@@ -61,6 +61,8 @@ steps:
     image: codeberg.org/mathisdt/releaseplugin:latest
     pull: true
     settings:
+      TAG_PATTERN: "^v"
+      RELEASE_NOTES: "see changelog: https://zephyrsoft.org/sdbviewer/history"
       PATTERN_TO_RELEASE: 'app/build/outputs/apk/release/*.apk'
       TOKEN:
         from_secret: TOKEN_REPO_READWRITE
