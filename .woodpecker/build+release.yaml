@@ -27,7 +27,7 @@ steps:
     when:
       - event: [ push, manual ]
     depends_on: []
-    image: eclipse-temurin:21-jdk
+    image: eclipse-temurin:25-jdk
     pull: true
     commands: |
       echo "installing packages..."
