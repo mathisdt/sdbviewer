@@ -1,6 +1,7 @@
 package org.zephyrsoft.sdbviewer.fetch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -49,10 +50,10 @@ public class SDBFetcherTest {
 
     @Test
     public void fetchRawDataFromNetwork() {
-        String rawData = fetcher.fetchRawDataFromNetwork("https://raw.githubusercontent.com/mathisdt/sdbviewer/master/songs.xml");
+        String rawData = fetcher.fetchRawDataFromNetwork("https://codeberg.org/mathisdt/sdbviewer/raw/branch/master/songs.xml");
 
         assertNotNull(rawData);
-        assertTrue(rawData.length() > 0);
+        assertFalse(rawData.isEmpty());
     }
 
     @Test
