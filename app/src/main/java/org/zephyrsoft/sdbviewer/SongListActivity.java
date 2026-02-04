@@ -148,48 +148,41 @@ public class SongListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                saveFirstVisiblePosition();
-                fetcher.invalidateSavedSongs(this);
-                loadAndShow(findViewById(R.id.song_list), null);
-                return true;
-
-            case R.id.action_settings:
-                Intent intentSettings = new Intent(this, SettingsActivity.class);
-                startActivity(intentSettings);
-                return true;
-
-            case R.id.action_import_settings:
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                    Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
-                    startActivity(intentImportSettings);
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                    && shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    AlertDialog.Builder dialog  = new AlertDialog.Builder(this);
-                    dialog.setMessage(R.string.camera_explanation);
-                    dialog.setPositiveButton(R.string.ok,
-                        (d, b) -> qrCodeScannerLauncher.launch(Manifest.permission.CAMERA));
-                    dialog.setNegativeButton(R.string.cancel, null);
-                    dialog.setCancelable(true);
-                    dialog.create().show();
-                } else {
-                    qrCodeScannerLauncher.launch(Manifest.permission.CAMERA);
-                }
-                return true;
-
-            case R.id.action_about:
-                Intent intentAbout = new Intent(this, AboutActivity.class);
-                startActivity(intentAbout);
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_refresh) {
+            saveFirstVisiblePosition();
+            fetcher.invalidateSavedSongs(this);
+            loadAndShow(findViewById(R.id.song_list), null);
+            return true;
+        } else if (itemId == R.id.action_settings) {
+            Intent intentSettings = new Intent(this, SettingsActivity.class);
+            startActivity(intentSettings);
+            return true;
+        } else if (itemId == R.id.action_import_settings) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+                Intent intentImportSettings = new Intent(this, QRScannerActivity.class);
+                startActivity(intentImportSettings);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setMessage(R.string.camera_explanation);
+                dialog.setPositiveButton(R.string.ok,
+                    (d, b) -> qrCodeScannerLauncher.launch(Manifest.permission.CAMERA));
+                dialog.setNegativeButton(R.string.cancel, null);
+                dialog.setCancelable(true);
+                dialog.create().show();
+            } else {
+                qrCodeScannerLauncher.launch(Manifest.permission.CAMERA);
+            }
+            return true;
+        } else if (itemId == R.id.action_about) {
+            Intent intentAbout = new Intent(this, AboutActivity.class);
+            startActivity(intentAbout);
+            return true;
+        }// If we got here, the user's action was not recognized.
+        // Invoke the superclass to handle it.
+        return super.onOptionsItemSelected(item);
     }
 
     private ActivityResultLauncher<String> qrCodeScannerLauncher =

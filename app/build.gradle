@@ -35,24 +35,14 @@ android {
     }
 
     buildFeatures {
-        // generate the BuildConfig class
         buildConfig = true
-    }
-
-    buildTypes {
-        release {
-            postprocessing {
-                removeUnusedCode = false
-                obfuscate = false
-                optimizeCode = false
-            }
-        }
+        resValues = true
     }
 
     // rename final APK files
-    android.applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach {
-            outputFileName = "SDBViewer_${variant.versionName}_${buildTime()}_${variant.buildType.name}${variant.signingReady ? "" : "-unsigned"}.apk"
+    androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(output.outputFileName.get().replace("app-", "SDBViewer_${defaultConfig.versionName}_${buildTime()}-"))
         }
     }
 }
