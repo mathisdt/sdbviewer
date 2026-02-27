@@ -27,8 +27,8 @@ android {
         // has to match the version used in Earthfile:
         buildToolsVersion "36.0.0"
 
-        versionCode 13                // increment after every release (for the next development cycle)
-        versionName "1.9.1"   // change with every release
+        versionCode 14                // increment after every release (for the next development cycle)
+        versionName "1.10-SNAPSHOT"   // change with every release
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
