@@ -6,11 +6,17 @@ is accessible via a URL (web address). It cannot be used for anything else, so i
 Song Database, this probably isn't for you!
 
 [<img src="https://zephyrsoft.org/wp-content/uploads/get-it-on-fdroid.png"
-     alt="Get it on F-Droid"
-     height="54px">](https://f-droid.org/packages/org.zephyrsoft.sdbviewer/)
+alt="Get it on F-Droid"
+height="54px">](https://f-droid.org/packages/org.zephyrsoft.sdbviewer/)
+
+[<img src="https://zephyrsoft.org/wp-content/uploads/get-it-on-obtainium.png"
+alt="Get it on Obtainium"
+height="54px">](obtainium://app/%7B%22id%22%3A%22org.zephyrsoft.sdbviewer%22%2C%22url%22%3A%22https%3A%2F%2Fcodeberg.org%2Fmathisdt%2Fsdbviewer%22%2C%22author%22%3A%22Mathis%20Dirksen-Thedens%22%2C%22name%22%3A%22SDB%20Viewer%22%2C%22additionalSettings%22%3A%22%7B%5C%22apkFilterRegEx%5C%22%3A%5C%22-signed%5C%22%2C%5C%22about%5C%22%3A%5C%22View%20song%20lyrics%2C%20a%20translation%20of%20it%20and%20guitar%20chords.%5C%22%2C%5C%22appName%5C%22%3A%5C%22SDB%20Viewer%5C%22%2C%5C%22appAuthor%5C%22%3A%5C%22Mathis%20Dirksen-Thedens%5C%22%7D%22%7D)
+(link needs [Obtainium app](https://obtainium.imranr.dev/))
+
 [<img src="https://zephyrsoft.org/wp-content/uploads/get-it-on-google-play.png"
-     alt="Get it on Google Play"
-     height="54px">](https://play.google.com/store/apps/details?id=org.zephyrsoft.sdbviewer)
+alt="Get it on Google Play"
+height="54px">](https://play.google.com/store/apps/details?id=org.zephyrsoft.sdbviewer)
 
 If you find a bug or want a new feature, you are welcome to
 [file an issue](https://codeberg.org/mathisdt/sdbviewer/issues) or even fix things yourself
